@@ -244,24 +244,24 @@ function drawCharacterInfo(ctx, x, y, character) {
     ctx.fillStyle = '#CCCCEE';
     ctx.fillText(statsText, x, y - 32);
 
-    // Уровень (ПОД персонажем, с запасом)
-    if (character.level > 1) {
-        const lvlText = `Lv.${utils.formatNumber(character.level)}`;
-        ctx.font = 'bold 10px Philosopher';
-        const lvlWidth = ctx.measureText(lvlText).width;
+    // Уровень (ПОД персонажем, с запасом) - всегда показывать
+    const lvl = character.level || 1;
+    const lvlText = `Lv.${utils.formatNumber(lvl)}`;
+    ctx.font = 'bold 10px Philosopher';
+    const lvlWidth = ctx.measureText(lvlText).width;
 
-        // Цвет по уровню
-        let lvlColor = '#4CAF50';
-        if (character.level > 10000) lvlColor = '#FFD700';
-        else if (character.level > 1000) lvlColor = '#9C27B0';
-        else if (character.level > 100) lvlColor = '#2196F3';
+    // Цвет по уровню
+    let lvlColor = '#4CAF50';
+    if (lvl > 10000) lvlColor = '#FFD700';
+    else if (lvl > 1000) lvlColor = '#9C27B0';
+    else if (lvl > 100) lvlColor = '#2196F3';
+    else if (lvl > 50) lvlColor = '#00BCD4';
 
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-        ctx.fillRect(x - lvlWidth / 2 - 5, y + 18, lvlWidth + 10, 14);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillRect(x - lvlWidth / 2 - 5, y + 18, lvlWidth + 10, 14);
 
-        ctx.fillStyle = lvlColor;
-        ctx.fillText(lvlText, x, y + 29);
-    }
+    ctx.fillStyle = lvlColor;
+    ctx.fillText(lvlText, x, y + 29);
 }
 
 window.sprites = { drawCharacter, drawCharacterInfo, generateCharacterSprites, SPRITE_SIZE };

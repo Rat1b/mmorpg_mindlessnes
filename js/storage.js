@@ -37,6 +37,9 @@ const DEFAULT_SAVE = {
     achievements: [],
     dialogueHistory: [],
     gachaPity: 0,
+    // Система репутации с NPC
+    npcReputation: {},  // { npcId: reputationValue 0-100 }
+    activeChallenge: null,  // { npcId, minutes, maxMisses, startedAt }
     settings: {
         soundEnabled: true,
         musicEnabled: true

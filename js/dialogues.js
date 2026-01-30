@@ -4,6 +4,7 @@
 
 let currentDialogue = null;
 let currentNPC = null;
+let currentTypeInterval = null; // Храним интервал чтобы очищать
 
 function openDialogue(npc) {
     currentNPC = npc;
@@ -17,7 +18,7 @@ function openDialogue(npc) {
             const quote = npc.quotes[Math.floor(Math.random() * npc.quotes.length)];
             const dynamicNode = {
                 text: quote,
-                options: [{ text: '🙏 Благодарю', next: 'end', reward: { xp: 30, coins: 15 } }]
+                options: [{ text: '🙏 Благодарю', next: 'end', reward: { coins: 15 } }]
             };
             showDialogueNode(npc, dynamicNode);
             document.getElementById('dialogue-panel').classList.add('active');
@@ -33,6 +34,12 @@ function openDialogue(npc) {
 function showDialogueNode(npc, node) {
     currentDialogue = node;
 
+    // ВАЖНО: Очистить предыдущий интервал печатания
+    if (currentTypeInterval) {
+        clearInterval(currentTypeInterval);
+        currentTypeInterval = null;
+    }
+
     // Portrait
     document.getElementById('npc-portrait').textContent = npc.emoji;
     document.getElementById('npc-name').textContent = npc.name;
@@ -41,16 +48,18 @@ function showDialogueNode(npc, node) {
     // Text
     let text = node.text;
 
-    // Typewriter effect
+    // Typewriter effect with cleanup
     const textEl = document.getElementById('dialogue-text');
     textEl.textContent = '';
     let i = 0;
-    const typeInterval = setInterval(() => {
+
+    currentTypeInterval = setInterval(() => {
         if (i < text.length) {
             textEl.textContent += text[i];
             i++;
         } else {
-            clearInterval(typeInterval);
+            clearInterval(currentTypeInterval);
+            currentTypeInterval = null;
         }
     }, 25);
 
@@ -73,11 +82,17 @@ function showDialogueNode(npc, node) {
 }
 
 function handleDialogueOption(option) {
-    // Handle rewards
+    // Очистить typewriter при переходе
+    if (currentTypeInterval) {
+        clearInterval(currentTypeInterval);
+        currentTypeInterval = null;
+    }
+
+    // Handle rewards - только монеты и гемы, НЕ минуты!
     if (option.reward) {
         const gameState = window.game.gameState;
         if (option.reward.coins) gameState.currency.pranaCoins += option.reward.coins;
-        if (option.reward.xp) gameState.stats.totalMinutes += option.reward.xp / 10;
+        // XP больше НЕ добавляет минуты - минуты только за реальную медитацию!
         if (option.reward.gems) gameState.currency.gems += option.reward.gems;
         storage.saveGame(gameState);
         updateHUD(gameState);
