@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Путь Осознанности - Мир Дыхания</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Marmelad&family=Philosopher:wght@400;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div id="game-container">
+        <!-- Game Canvas -->
+        <canvas id="game-canvas"></canvas>
+
+        <!-- Top HUD -->
+        <div id="top-hud">
+            <div class="hud-panel player-stats">
+                <div class="avatar-mini" id="player-avatar-mini"></div>
+                <div class="stats-info">
+                    <div class="player-name" id="player-name-display">Искатель</div>
+                    <div class="level-bar">
+                        <span class="level-text">Ур. <span id="player-level">1</span></span>
+                        <div class="xp-bar">
+                            <div class="xp-fill" id="xp-fill"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="hud-panel currency-panel">
+                <div class="currency-item">
+                    <span class="currency-icon">✨</span>
+                    <span id="prana-coins">0</span>
+                </div>
+                <div class="currency-item">
+                    <span class="currency-icon">💎</span>
+                    <span id="gems">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Meditation Timer Panel -->
+        <div id="meditation-panel" class="side-panel">
+            <div class="panel-header">
+                <span>🧘 Практика</span>
+                <button class="close-btn" onclick="toggleMeditationPanel()">×</button>
+            </div>
+            <div class="panel-content">
+                <div class="timer-display">
+                    <span id="timer-minutes">00</span>:<span id="timer-seconds">00</span>
+                </div>
+                <div class="timer-controls">
+                    <button class="timer-preset" data-minutes="5">5 мин</button>
+                    <button class="timer-preset" data-minutes="10">10 мин</button>
+                    <button class="timer-preset" data-minutes="15">15 мин</button>
+                    <button class="timer-preset" data-minutes="30">30 мин</button>
+                    <button class="timer-preset" data-minutes="60">1 час</button>
+                </div>
+                <div class="custom-timer">
+                    <input type="number" id="custom-minutes" placeholder="Минуты" min="1" max="180">
+                    <button onclick="setCustomTimer()">Установить</button>
+                </div>
+                <div class="meditation-buttons">
+                    <button id="start-meditation-btn" class="action-btn start-btn" onclick="startMeditation()">
+                        ▶ Начать
+                    </button>
+                    <button id="pause-meditation-btn" class="action-btn pause-btn" onclick="pauseMeditation()"
+                        style="display:none;">
+                        ⏸ Пауза
+                    </button>
+                    <button id="stop-meditation-btn" class="action-btn stop-btn" onclick="stopMeditation()"
+                        style="display:none;">
+                        ⏹ Завершить
+                    </button>
+                </div>
+
+                <!-- Missed Breaths Counter -->
+                <div class="missed-breaths-section">
+                    <h4>Пропущенные вдохи</h4>
+                    <div class="missed-counter">
+                        <button class="minus-btn" onclick="adjustMissedBreaths(-1)">−</button>
+                        <span id="missed-breaths-count">0</span>
+                        <button class="plus-btn" onclick="adjustMissedBreaths(1)">+</button>
+                    </div>
+                    <p class="hint-text">Каждый пропущенный вдох уменьшает награду на 2%</p>
+                </div>
+
+                <div class="retroactive-section">
+                    <h4>Добавить задним числом</h4>
+                    <div class="retro-input">
+                        <input type="number" id="retro-minutes" placeholder="Минуты" min="1">
+                        <input type="number" id="retro-missed" placeholder="Пропущено" min="0" value="0">
+                        <button onclick="addRetroactiveMeditation()">Добавить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Panel -->
+        <div id="stats-panel" class="side-panel">
+            <div class="panel-header">
+                <span>📊 Статистика</span>
+                <button class="close-btn" onclick="toggleStatsPanel()">×</button>
+            </div>
+            <div class="panel-content">
+                <div class="stat-row">
+                    <span>Сегодня:</span>
+                    <span id="stat-today">0 мин</span>
+                </div>
+                <div class="stat-row">
+                    <span>Эта неделя:</span>
+                    <span id="stat-week">0 мин</span>
+                </div>
+                <div class="stat-row">
+                    <span>Этот месяц:</span>
+                    <span id="stat-month">0 ч</span>
+                </div>
+                <div class="stat-row total">
+                    <span>Всего:</span>
+                    <span id="stat-total">0 ч</span>
+                </div>
+                <div class="stat-row">
+                    <span>Серия дней:</span>
+                    <span id="stat-streak">0 дней 🔥</span>
+                </div>
+                <div class="stat-row">
+                    <span>Точность:</span>
+                    <span id="stat-accuracy">100%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory/Gacha Panel -->
+        <div id="gacha-panel" class="side-panel large-panel">
+            <div class="panel-header">
+                <span>🎰 Храм Судьбы</span>
+                <button class="close-btn" onclick="toggleGachaPanel()">×</button>
+            </div>
+            <div class="panel-content">
+                <div class="gacha-tabs">
+                    <button class="gacha-tab active" data-tab="summon">Призыв</button>
+                    <button class="gacha-tab" data-tab="inventory">Инвентарь</button>
+                    <button class="gacha-tab" data-tab="skins">Образы</button>
+                </div>
+                <div id="summon-tab" class="tab-content active">
+                    <div class="gacha-banner">
+                        <div class="banner-title">Колесо Сансары</div>
+                        <div class="banner-image">🔮</div>
+                    </div>
+                    <div class="gacha-buttons">
+                        <button class="gacha-btn single" onclick="doGachaPull(1)">
+                            <span>Призыв ×1</span>
+                            <span class="cost">✨ 100</span>
+                        </button>
+                        <button class="gacha-btn multi" onclick="doGachaPull(10)">
+                            <span>Призыв ×10</span>
+                            <span class="cost">✨ 900</span>
+                        </button>
+                    </div>
+                    <div class="pity-info">
+                        До гарантии: <span id="pity-counter">0</span>/90
+                    </div>
+                </div>
+                <div id="inventory-tab" class="tab-content">
+                    <div class="inventory-grid" id="inventory-grid"></div>
+                </div>
+                <div id="skins-tab" class="tab-content">
+                    <div class="skins-grid" id="skins-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dialogue Panel -->
+        <div id="dialogue-panel">
+            <div class="dialogue-portrait" id="npc-portrait"></div>
+            <div class="dialogue-content">
+                <div class="dialogue-name" id="npc-name">Мастер</div>
+                <div class="dialogue-text" id="dialogue-text"></div>
+                <div class="dialogue-options" id="dialogue-options"></div>
+            </div>
+            <button class="dialogue-close" onclick="closeDialogue()">×</button>
+        </div>
+
+        <!-- Reward Popup -->
+        <div id="reward-popup">
+            <div class="reward-content">
+                <div class="reward-title">Награда!</div>
+                <div class="reward-items" id="reward-items"></div>
+                <button onclick="closeRewardPopup()">Забрать</button>
+            </div>
+        </div>
+
+        <!-- Achievement Popup -->
+        <div id="achievement-popup">
+            <div class="achievement-icon" id="achievement-icon">🏆</div>
+            <div class="achievement-info">
+                <div class="achievement-title" id="achievement-title">Достижение!</div>
+                <div class="achievement-desc" id="achievement-desc"></div>
+            </div>
+        </div>
+
+        <!-- Bottom Menu -->
+        <div id="bottom-menu">
+            <button class="menu-btn" onclick="toggleMeditationPanel()">
+                <span class="menu-icon">🧘</span>
+                <span>Практика</span>
+            </button>
+            <button class="menu-btn" onclick="toggleStatsPanel()">
+                <span class="menu-icon">📊</span>
+                <span>Статистика</span>
+            </button>
+            <button class="menu-btn" onclick="toggleGachaPanel()">
+                <span class="menu-icon">🎰</span>
+                <span>Храм</span>
+            </button>
+            <button class="menu-btn" onclick="toggleAchievementsPanel()">
+                <span class="menu-icon">🏆</span>
+                <span>Достижения</span>
+            </button>
+            <button class="menu-btn" onclick="toggleSettingsPanel()">
+                <span class="menu-icon">⚙️</span>
+                <span>Настройки</span>
+            </button>
+        </div>
+
+        <!-- E Button for Dialogue -->
+        <button class="interact-btn" id="interact-btn" onclick="interactWithNearbyNPC()">
+            E
+        </button>
+
+        <!-- Settings Panel -->
+        <div id="settings-panel" class="side-panel">
+            <div class="panel-header">
+                <span>⚙️ Настройки</span>
+                <button class="close-btn" onclick="toggleSettingsPanel()">×</button>
+            </div>
+            <div class="panel-content">
+                <div class="setting-row">
+                    <label>Имя персонажа:</label>
+                    <input type="text" id="player-name-input" placeholder="Искатель">
+                    <button onclick="updatePlayerName()">Сохранить</button>
+                </div>
+                <div class="setting-row">
+                    <label>Возраст:</label>
+                    <input type="number" id="player-age-input" min="1" max="150" value="25">
+                    <button onclick="updatePlayerAge()">Сохранить</button>
+                </div>
+                <div class="setting-row">
+                    <label>Звуки:</label>
+                    <input type="checkbox" id="sound-toggle" checked>
+                </div>
+                <div class="setting-row">
+                    <label>Музыка:</label>
+                    <input type="checkbox" id="music-toggle" checked>
+                </div>
+                <hr>
+                <div class="save-section">
+                    <h4>💾 Сохранение</h4>
+                    <button class="save-btn" onclick="exportSaveData()">📤 Экспорт JSON</button>
+                    <button class="save-btn" onclick="document.getElementById('import-file').click()">📥 Импорт
+                        JSON</button>
+                    <input type="file" id="import-file" accept=".json" style="display:none"
+                        onchange="importSaveData(event)">
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievements Panel -->
+        <div id="achievements-panel" class="side-panel large-panel">
+            <div class="panel-header">
+                <span>🏆 Достижения</span>
+                <button class="close-btn" onclick="toggleAchievementsPanel()">×</button>
+            </div>
+            <div class="panel-content">
+                <div class="achievements-grid" id="achievements-grid"></div>
+            </div>
+        </div>
+
+        <!-- Particles Container -->
+        <div id="particles-container"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="data/npcs-data.js"></script>
+    <script src="data/dialogues-data.js"></script>
+    <script src="data/achievements-data.js"></script>
+    <script src="data/gacha-data.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/sprites.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/characters.js"></script>
+    <script src="js/meditation.js"></script>
+    <script src="js/rewards.js"></script>
+    <script src="js/dialogues.js"></script>
+    <script src="js/gacha.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/game.js"></script>
+</body>
+
+</html>
