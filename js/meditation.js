@@ -120,6 +120,12 @@ class MeditationSystem {
         // Give rewards
         this.gameState.currency.pranaCoins += coins;
 
+        // === NPC CHALLENGE COMPLETION ===
+        let challengeResult = null;
+        if (this.gameState.activeChallenge && !isRetroactive) {
+            challengeResult = reputation.completeChallenge(this.gameState, minutes, missedBreaths);
+        }
+
         // Save
         storage.saveGame(this.gameState);
 
@@ -142,6 +148,13 @@ class MeditationSystem {
 
         // Check achievements
         checkAchievements(this.gameState);
+
+        // === Показать результат челленджа после попапа наград ===
+        if (challengeResult) {
+            setTimeout(() => {
+                showChallengeResult(challengeResult);
+            }, 2500);
+        }
     }
 }
 
