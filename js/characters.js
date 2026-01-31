@@ -213,7 +213,7 @@ function createNPCsFromData(npcsData, map) {
             pos = findFreePosition(2500, 3900, 1800, 2800);
         } else {
             // Остальные по всей безопасной зоне
-            pos = findFreePosition(new Set([2000, 4400]), new Set([1500, 3300]));
+            pos = findFreePosition(2000, 4400, 1500, 3300);
             // Fallback to random safe spot if complex logic fails, utilizing the helper 
             if (!pos || !pos.x) pos = findFreePosition(2000, 4400, 1500, 3300);
         }
