@@ -6,17 +6,23 @@ class MeditationSystem {
     constructor(gameState, onUpdate) {
         this.gameState = gameState;
         this.onUpdate = onUpdate;
+
+        this.interval = null;
         this.isActive = false;
         this.isPaused = false;
+
+        // Timer state
         this.targetMinutes = 10;
+        this.startedAt = null;
+        this.pausedAt = null;
+        this.totalPausedMs = 0;
         this.missedBreaths = 0;
-        this.interval = null;
         this.challengeFromNPC = null;
 
-        // Timestamp-based timing for background support
-        this.startedAt = null;      // When meditation started (timestamp)
-        this.pausedAt = null;       // When paused (timestamp) 
-        this.totalPausedMs = 0;     // Total time spent paused
+        // Check for active offline session
+        if (this.gameState.activeMeditation) {
+            this.resumeFromStorage();
+        }
 
         // Setup visibility change handler for background tab support
         this.setupVisibilityHandler();
@@ -72,6 +78,17 @@ class MeditationSystem {
         this.startedAt = Date.now();
         this.pausedAt = null;
         this.totalPausedMs = 0;
+        this.missedBreaths = 0;
+        this.isActive = true;
+        this.isPaused = false;
+
+        // Persist session
+        this.gameState.activeMeditation = {
+            startTime: this.startedAt,
+            targetMinutes: this.targetMinutes,
+            missedBreaths: 0
+        };
+        storage.saveGame(this.gameState);
 
         document.getElementById('missed-breaths-count').textContent = '0';
         document.getElementById('start-meditation-btn').style.display = 'none';
@@ -110,11 +127,54 @@ class MeditationSystem {
         document.getElementById('pause-meditation-btn').style.display = 'none';
         document.getElementById('stop-meditation-btn').style.display = 'none';
 
-        // Reset timestamps
         this.startedAt = null;
         this.pausedAt = null;
         this.totalPausedMs = 0;
         this.updateDisplay();
+
+        // Clear persistence
+        delete this.gameState.activeMeditation;
+        storage.saveGame(this.gameState);
+    }
+
+    resumeFromStorage() {
+        const session = this.gameState.activeMeditation;
+        if (!session) return;
+
+        const now = Date.now();
+        const elapsedMinutes = (now - session.startTime) / 60000;
+
+        if (elapsedMinutes >= session.targetMinutes) {
+            // Completed while offline!
+            console.log(`Offline meditation completed! Elapsed: ${elapsedMinutes.toFixed(1)}m`);
+            // We need to call complete, but logic expects running state or we assume implicit
+            this.startedAt = session.startTime;
+            this.targetMinutes = session.targetMinutes;
+            this.missedBreaths = session.missedBreaths || 0;
+
+            // Clean up UI state just in case
+            delete this.gameState.activeMeditation;
+            storage.saveGame(this.gameState);
+
+            // Give rewards immediately
+            this.completeMeditation(this.targetMinutes, this.missedBreaths);
+        } else {
+            // Resume
+            console.log(`Resuming session. Elapsed: ${elapsedMinutes.toFixed(1)}m / ${session.targetMinutes}m`);
+            this.isActive = true;
+            this.isPaused = false;
+            this.targetMinutes = session.targetMinutes;
+            this.startedAt = session.startTime;
+            this.missedBreaths = session.missedBreaths || 0;
+            this.totalPausedMs = 0; // Assume no pause during offline
+
+            document.getElementById('start-meditation-btn').style.display = 'none';
+            document.getElementById('pause-meditation-btn').style.display = 'inline-flex';
+            document.getElementById('stop-meditation-btn').style.display = 'inline-flex';
+
+            this.interval = setInterval(() => this.tick(), 100);
+            this.updateDisplay();
+        }
     }
 
     tick() {
@@ -188,21 +248,51 @@ class MeditationSystem {
             challengeResult = reputation.completeChallenge(this.gameState, minutes, missedBreaths);
         }
 
+        // === ZONE RESOURCES (FARMING) ===
+        let gatheredResources = [];
+        if (window.game && window.game.map && window.calculateZoneYield) {
+            const px = this.gameState.player.x;
+            const py = this.gameState.player.y;
+            const biome = window.game.map.getBiomeId(px, py);
+
+            // Calculate yield
+            gatheredResources = window.calculateZoneYield(biome, minutes);
+
+            // Add to inventory
+            gatheredResources.forEach(res => {
+                const existing = this.gameState.inventory.find(i => i.id === res.id);
+                if (existing) {
+                    existing.count += res.count;
+                } else {
+                    this.gameState.inventory.push({ ...res });
+                }
+            });
+        }
+
         // Save
         storage.saveGame(this.gameState);
 
         // Show reward popup
         const rewards = [
             { icon: '✨', amount: `+${coins}`, label: 'Прана' },
-            { icon: '✨', amount: `+${xp}`, label: 'Опыт' }
+            { icon: '⭐', amount: `+${xp}`, label: 'Опыт' }
         ];
 
+        // Add gathered resources to popup
+        gatheredResources.forEach(res => {
+            rewards.push({
+                icon: res.emoji,
+                amount: `+${res.count}`,
+                label: res.name
+            });
+        });
+
         if (penaltyPercent > 0) {
-            rewards.push({ icon: '😔', amount: `-${penaltyPercent}%`, label: 'Штраф' });
+            rewards.push({ icon: '⚠️', amount: `-${penaltyPercent}%`, label: 'Штраф (дыхание)' });
         }
 
-        if (missedBreaths === 0 && minutes >= 10) {
-            rewards.push({ icon: '🏆', amount: 'Идеально!', label: '' });
+        if (isRetroactive) {
+            rewards.push({ icon: '📅', amount: '', label: 'Заднее число' });
         }
 
         showRewardPopup(rewards);

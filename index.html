@@ -227,6 +227,14 @@
             </div>
         </div>
 
+        <!-- Resource Forecast UI -->
+        <div id="resource-forecast" class="resource-forecast"
+            style="display:none; position:fixed; bottom:100px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.8); color:white; padding:10px; border-radius:10px; z-index:100; text-align:center; min-width: 250px;">
+            <div id="forecast-zone" style="font-weight:bold; color:#FFD700; margin-bottom:5px;"></div>
+            <div id="forecast-drops" style="font-size:0.9em;"></div>
+            <div id="forecast-estimates" style="margin-top:5px; font-size:0.8em; color:#aaa;"></div>
+        </div>
+
         <!-- Bottom Menu -->
         <div id="bottom-menu">
             <button class="menu-btn" onclick="toggleMeditationPanel()">
@@ -329,6 +337,7 @@
     <script src="js/gacha.js"></script>
     <script src="js/quests.js"></script>
     <script src="js/ui.js"></script>
+    <script src="js/resources.js"></script>
     <script src="js/game.js"></script>
 </body>
 

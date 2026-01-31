@@ -150,6 +150,13 @@ function equipItem(item) {
         // Toggle
         if (gameState.player.skin === item.id) {
             gameState.player.skin = 'skin_casual'; // Возврат к дефолту
+
+            // Reset player appearance
+            if (window.game && window.game.player) {
+                window.game.player.skin = 'skin_casual';
+                window.game.player.emoji = '👤'; // Default emoji
+            }
+
             storage.saveGame(gameState);
             updateInventoryDisplay();
             showNotification(`❌ Образ "${item.name}" снят`);
@@ -157,6 +164,13 @@ function equipItem(item) {
         }
 
         gameState.player.skin = item.id;
+
+        // Apply new skin immediately
+        if (window.game && window.game.player) {
+            window.game.player.skin = item.id;
+            window.game.player.emoji = item.emoji; // Update emoji
+        }
+
         storage.saveGame(gameState);
         updateInventoryDisplay();
         showNotification(`👕 Образ "${item.name}" выбран!`);
@@ -200,9 +214,18 @@ function updateSkinsDisplay() {
 
         if (unlocked) {
             div.onclick = () => {
+                // Update save state
                 gameState.player.skin = skin.id;
+
+                // Update live player object
+                if (window.game && window.game.player) {
+                    window.game.player.skin = skin.id;
+                    window.game.player.emoji = skin.emoji;
+                }
+
                 storage.saveGame(gameState);
                 alert(`Образ "${skin.name}" выбран!`);
+                updateSkinsDisplay(); // Refresh UI to show lock change
             };
         }
         grid.appendChild(div);

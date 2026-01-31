@@ -182,23 +182,43 @@ function createNPCsFromData(npcsData, map) {
         return { x: utils.randomInt(minX, maxX), y: utils.randomInt(minY, maxY) };
     }
 
-    // Карта теперь 100x80 тайлов = 3200x2560 пикселей
-    const mapPixelWidth = 100 * 32;
-    const mapPixelHeight = 80 * 32;
+    // Карта теперь 200x150 тайлов = 6400x4800 пикселей
+    const TILE_SIZE = 32;
+    const mapPixelWidth = 200 * TILE_SIZE;
+    const mapPixelHeight = 150 * TILE_SIZE;
 
     npcsData.forEach((data, i) => {
         let pos;
 
-        if (data.isMaster) {
-            // Мастера в центре карты (область храма)
-            pos = findFreePosition(1200, 1800, 900, 1500);
-        } else if (data.rarity === 'rare') {
-            // Практикующие в разных зонах
-            pos = findFreePosition(400, 2800, 400, 2200);
+        // Определяем зону спавна на основе ID или роли
+        // Координаты зон примерно соответствуют map.js
+
+        if (data.id.includes('mountain')) {
+            // Горы (Север): x: 0-200, y: 0-40 (тайлы) -> x: 0-6400, y: 0-1280
+            pos = findFreePosition(500, mapPixelWidth - 500, 200, 1000);
+        } else if (data.id.includes('desert')) {
+            // Пустыня (Восток): x: 140-200, y: 40-110 (тайлы) -> x: 4480-6400, y: 1280-3520
+            pos = findFreePosition(4500, mapPixelWidth - 200, 1500, 3200);
+        } else if (data.id.includes('forest')) {
+            // Лес (Запад): x: 0-60, y: 40-110 (тайлы) -> x: 0-1920, y: 1280-3520
+            pos = findFreePosition(200, 1800, 1500, 3200);
+        } else if (data.id.includes('beach') || data.id.includes('ocean')) {
+            // Пляж (Юг): x: 0-200, y: 110-150 (тайлы) -> x: 0-6400, y: 3520-4800
+            pos = findFreePosition(500, mapPixelWidth - 500, 3600, mapPixelHeight - 300);
+        } else if (data.id.includes('cave')) {
+            // Спавн в случайных местах, предпочтительно ближе к горам
+            pos = findFreePosition(1000, 5000, 500, 2000);
+        } else if (data.isMaster) {
+            // Мастера в центре (Храм): x: 60-140, y: 40-110 (тайлы)
+            pos = findFreePosition(2500, 3900, 1800, 2800);
         } else {
-            // Обычные люди по всей карте
-            pos = findFreePosition(200, mapPixelWidth - 200, 200, mapPixelHeight - 200);
+            // Остальные по всей безопасной зоне
+            pos = findFreePosition(new Set([2000, 4400]), new Set([1500, 3300]));
+            // Fallback to random safe spot if complex logic fails, utilizing the helper 
+            if (!pos || !pos.x) pos = findFreePosition(2000, 4400, 1500, 3300);
         }
+
+        if (!pos) pos = { x: 3200, y: 2400 };
 
         placedPositions.push(pos);
         const npc = new NPC({ ...data, x: pos.x, y: pos.y });

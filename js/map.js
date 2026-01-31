@@ -365,6 +365,24 @@ class GameMap {
         return '🌿 Долина Покоя';
     }
 
+    // Получить ID биома для логики (ресурсы и т.д.)
+    getBiomeId(x, y) {
+        const tx = Math.floor(x / TILE_SIZE);
+        const ty = Math.floor(y / TILE_SIZE);
+
+        if (ty < 35 && tx >= 60 && tx <= 140) return 'mountains';
+        if (tx >= 145 && ty >= 35 && ty <= 105) return 'desert';
+        if (tx <= 55 && ty >= 25 && ty <= 110) return 'forest';
+        if (ty >= 115) return 'beach';
+        if (tx >= 85 && tx <= 115 && ty >= 55 && ty <= 80) return 'temple';
+
+        // Пещеры (островки)
+        if ((tx >= 15 && tx <= 35 && ty >= 115 && ty <= 135) ||
+            (tx >= 165 && tx <= 185 && ty >= 125 && ty <= 145)) return 'cave';
+
+        return 'meadow';
+    }
+
     draw(ctx, camera) {
         const startX = Math.max(0, Math.floor(camera.x / TILE_SIZE));
         const startY = Math.max(0, Math.floor(camera.y / TILE_SIZE));

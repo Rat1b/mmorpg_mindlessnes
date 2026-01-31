@@ -36,6 +36,9 @@ class Game {
         // Quest system
         this.quests = new QuestSystem(this.gameState);
 
+        // Resources (Albion-style farming)
+        this.resources = window.generateWorldResources ? generateWorldResources(this.map) : [];
+
 
         // Camera - размер вьюпорта в игровых координатах (делим на зум)
         this.camera = {
@@ -133,6 +136,26 @@ class Game {
             }
         }
 
+        // Check if clicked on Resource
+        if (this.resources) {
+            for (const res of this.resources) {
+                if (res.isDepleted) continue;
+
+                const dist = utils.distance(clickX, clickY, res.x, res.y);
+                if (dist < 50) {
+                    const playerDist = utils.distance(this.player.x, this.player.y, res.x, res.y);
+                    if (playerDist < 80) {
+                        // Gather!
+                        showNotification(`🧘 Медитируйте в этой зоне, чтобы собрать ${res.data.name}`);
+                    } else {
+                        // Move player towards Resource
+                        this.player.moveTo(res.x, res.y - 40);
+                    }
+                    return;
+                }
+            }
+        }
+
         // Move player to tap position
         if (this.map.isWalkable(clickX, clickY)) {
             this.player.moveTo(clickX, clickY);
@@ -158,10 +181,83 @@ class Game {
         this.camera.y = this.player.y - this.camera.height / 2;
 
         // Clamp camera
-        const mapPixelWidth = this.map.width * TILE_SIZE;
-        const mapPixelHeight = this.map.height * TILE_SIZE;
+        const mapPixelWidth = (this.map.width || 200) * (window.TILE_SIZE || 32);
+        const mapPixelHeight = (this.map.height || 150) * (window.TILE_SIZE || 32);
         this.camera.x = utils.clamp(this.camera.x, 0, Math.max(0, mapPixelWidth - this.camera.width));
         this.camera.y = utils.clamp(this.camera.y, 0, Math.max(0, mapPixelHeight - this.camera.height));
+
+        // Update resources
+        if (this.resources) {
+            this.resources.forEach(res => res.update());
+        }
+
+        this.updateResourceForecast();
+    }
+
+    updateResourceForecast() {
+        if (this.frame % 30 !== 0) return; // Update every 0.5s
+
+        const forecastDiv = document.getElementById('resource-forecast');
+        if (!forecastDiv) return;
+
+        // 1. Active Meditation State
+        if (this.meditation && this.meditation.isActive) {
+            forecastDiv.style.display = 'block';
+            const elapsed = Math.floor(this.meditation.getElapsedSeconds() / 60);
+
+            document.getElementById('forecast-zone').textContent = '🧘 Сбор ресурсов...';
+            document.getElementById('forecast-zone').style.color = '#00FF00';
+
+            // Show what we are gathering based on zone
+            const x = this.player.x;
+            const y = this.player.y;
+            const biome = this.map.getBiomeId(x, y);
+            const potential = window.ZONE_RESOURCES && window.ZONE_RESOURCES[biome];
+
+            if (potential) {
+                const dropNames = potential.map(p => window.RESOURCE_TYPES[p.type].emoji).join(' ');
+                document.getElementById('forecast-drops').textContent = `${dropNames}`;
+            }
+
+            document.getElementById('forecast-estimates').innerHTML = `
+                <div style="font-size:1.1em; color:#fff">⏳ ${elapsed} мин</div>
+                <div style="color:#FFFF00">📥 Ожидается: ~${elapsed} предм.</div>
+            `;
+            return;
+        }
+
+        // 2. Forecast State (Idle)
+        const x = this.player.x;
+        const y = this.player.y;
+        const biome = this.map.getBiomeId(x, y);
+        const zoneName = this.map.getZoneName(x, y);
+
+        // Check if there are resources in this biome
+        const potential = window.ZONE_RESOURCES && window.ZONE_RESOURCES[biome];
+        if (!potential || potential.length === 0) {
+            forecastDiv.style.display = 'none';
+            return;
+        }
+
+        forecastDiv.style.display = 'block';
+        document.getElementById('forecast-zone').textContent = zoneName;
+        document.getElementById('forecast-zone').style.color = '#FFD700';
+
+        // Drops
+        const dropNames = potential.map(p => {
+            const res = window.RESOURCE_TYPES[p.type];
+            return `${res.emoji}`;
+        }).join(' ');
+        document.getElementById('forecast-drops').textContent = `Добыча: ${dropNames}`;
+
+        // Estimates
+        document.getElementById('forecast-estimates').innerHTML = `
+            <div style="display:flex; justify-content:space-around; width:100%">
+                <span>5м: ~5</span>
+                <span>15м: ~15</span>
+                <span>30м: ~35</span>
+            </div>
+        `;
     }
 
     draw() {
@@ -174,7 +270,13 @@ class Game {
         // Draw map
         this.map.draw(this.ctx, this.camera);
 
+        // Draw resources (ground level)
+        if (this.resources) {
+            this.resources.forEach(res => res.draw(this.ctx, this.camera));
+        }
+
         // Collect all entities for y-sorting
+
         const entities = [this.player, ...this.npcs];
         entities.sort((a, b) => a.y - b.y);
 
