@@ -152,11 +152,11 @@
                     <div class="gacha-buttons">
                         <button class="gacha-btn single" onclick="doGachaPull(1)">
                             <span>Призыв ×1</span>
-                            <span class="cost">✨ 100</span>
+                            <span class="cost">✨ 1000</span>
                         </button>
                         <button class="gacha-btn multi" onclick="doGachaPull(10)">
                             <span>Призыв ×10</span>
-                            <span class="cost">✨ 900</span>
+                            <span class="cost">✨ 9000</span>
                         </button>
                     </div>
                     <div class="pity-info">
@@ -168,6 +168,30 @@
                 </div>
                 <div id="skins-tab" class="tab-content">
                     <div class="skins-grid" id="skins-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quests Panel -->
+        <div id="quests-panel" class="side-panel large-panel">
+            <div class="panel-header">
+                <span>📋 Квесты</span>
+                <button class="close-btn" onclick="toggleQuestsPanel()">×</button>
+            </div>
+            <div class="panel-content">
+                <div class="gacha-tabs">
+                    <button class="quest-tab active" data-tab="daily-quests">Ежедневные</button>
+                    <button class="quest-tab" data-tab="weekly-quests">Еженедельные</button>
+                </div>
+                <div id="daily-quests-tab" class="tab-content active">
+                    <div class="quests-list" id="daily-quests-list">
+                        <!-- Заполняется динамически -->
+                    </div>
+                </div>
+                <div id="weekly-quests-tab" class="tab-content">
+                    <div class="quests-list" id="weekly-quests-list">
+                        <!-- Заполняется динамически -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -220,6 +244,10 @@
             <button class="menu-btn" onclick="toggleAchievementsPanel()">
                 <span class="menu-icon">🏆</span>
                 <span>Достижения</span>
+            </button>
+            <button class="menu-btn" onclick="toggleQuestsPanel()">
+                <span class="menu-icon">📋</span>
+                <span>Квесты</span>
             </button>
             <button class="menu-btn" onclick="toggleSettingsPanel()">
                 <span class="menu-icon">⚙️</span>
@@ -299,6 +327,7 @@
     <script src="js/reputation.js"></script>
     <script src="js/dialogues.js"></script>
     <script src="js/gacha.js"></script>
+    <script src="js/quests.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/game.js"></script>
 </body>

@@ -35,6 +35,72 @@ function toggleStatsPanel() { togglePanel('stats-panel'); }
 function toggleGachaPanel() { togglePanel('gacha-panel'); }
 function toggleSettingsPanel() { togglePanel('settings-panel'); }
 function toggleAchievementsPanel() { togglePanel('achievements-panel'); }
+function toggleQuestsPanel() {
+    togglePanel('quests-panel');
+    if (activePanels.has('quests-panel')) {
+        updateQuestsDisplay();
+    }
+}
+
+function updateQuestsDisplay() {
+    if (!window.game || !window.game.quests) return;
+
+    const quests = window.game.quests.getAvailableQuests();
+
+    // Ежедневные квесты
+    const dailyList = document.getElementById('daily-quests-list');
+    if (dailyList) {
+        dailyList.innerHTML = '';
+        quests.daily.forEach(quest => {
+            const div = document.createElement('div');
+            div.className = `quest-item ${quest.completed ? 'completed' : ''}`;
+            const progressPercent = Math.min(100, (quest.progress / quest.max) * 100);
+            div.innerHTML = `
+                <div class="quest-header">
+                    <span class="quest-icon">${quest.icon}</span>
+                    <span class="quest-name">${quest.name}</span>
+                    ${quest.completed ? '<span class="completed-badge">✅</span>' : ''}
+                </div>
+                <div class="quest-desc">${quest.description}</div>
+                <div class="quest-progress-bar">
+                    <div class="quest-progress-fill" style="width: ${progressPercent}%"></div>
+                </div>
+                <div class="quest-footer">
+                    <span class="quest-progress-text">${Math.floor(quest.progress)} / ${quest.max}</span>
+                    <span class="quest-reward">✨ ${quest.reward.coins} ${quest.reward.gems ? `💎 ${quest.reward.gems}` : ''}</span>
+                </div>
+            `;
+            dailyList.appendChild(div);
+        });
+    }
+
+    // Еженедельные квесты
+    const weeklyList = document.getElementById('weekly-quests-list');
+    if (weeklyList) {
+        weeklyList.innerHTML = '';
+        quests.weekly.forEach(quest => {
+            const div = document.createElement('div');
+            div.className = `quest-item ${quest.completed ? 'completed' : ''}`;
+            const progressPercent = Math.min(100, (quest.progress / quest.max) * 100);
+            div.innerHTML = `
+                <div class="quest-header">
+                    <span class="quest-icon">${quest.icon}</span>
+                    <span class="quest-name">${quest.name}</span>
+                    ${quest.completed ? '<span class="completed-badge">✅</span>' : ''}
+                </div>
+                <div class="quest-desc">${quest.description}</div>
+                <div class="quest-progress-bar">
+                    <div class="quest-progress-fill" style="width: ${progressPercent}%"></div>
+                </div>
+                <div class="quest-footer">
+                    <span class="quest-progress-text">${Math.floor(quest.progress)} / ${quest.max}</span>
+                    <span class="quest-reward">✨ ${quest.reward.coins} ${quest.reward.gems ? `💎 ${quest.reward.gems}` : ''}</span>
+                </div>
+            `;
+            weeklyList.appendChild(div);
+        });
+    }
+}
 
 function updateAchievementsDisplay() {
     const gameState = window.game.gameState;
@@ -175,6 +241,8 @@ window.toggleStatsPanel = toggleStatsPanel;
 window.toggleGachaPanel = toggleGachaPanel;
 window.toggleSettingsPanel = toggleSettingsPanel;
 window.toggleAchievementsPanel = toggleAchievementsPanel;
+window.toggleQuestsPanel = toggleQuestsPanel;
+window.updateQuestsDisplay = updateQuestsDisplay;
 window.updatePlayerName = updatePlayerName;
 window.updatePlayerAge = updatePlayerAge;
 window.setupDpad = setupDpad;

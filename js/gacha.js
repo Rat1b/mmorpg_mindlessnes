@@ -4,7 +4,7 @@
 
 function doGachaPull(count) {
     const gameState = window.game.gameState;
-    const cost = count === 1 ? 100 : 900;
+    const cost = count === 1 ? 1000 : 9000;
 
     if (gameState.currency.pranaCoins < cost) {
         alert('Недостаточно Праны! Медитируй больше 🧘');

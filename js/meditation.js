@@ -9,10 +9,52 @@ class MeditationSystem {
         this.isActive = false;
         this.isPaused = false;
         this.targetMinutes = 10;
-        this.elapsedSeconds = 0;
         this.missedBreaths = 0;
         this.interval = null;
         this.challengeFromNPC = null;
+
+        // Timestamp-based timing for background support
+        this.startedAt = null;      // When meditation started (timestamp)
+        this.pausedAt = null;       // When paused (timestamp) 
+        this.totalPausedMs = 0;     // Total time spent paused
+
+        // Setup visibility change handler for background tab support
+        this.setupVisibilityHandler();
+    }
+
+    setupVisibilityHandler() {
+        document.addEventListener('visibilitychange', () => {
+            if (this.isActive && !this.isPaused) {
+                // Tab became visible again - sync the display
+                this.syncFromTimestamp();
+                this.updateDisplay();
+            }
+        });
+
+        // Also handle window focus for additional reliability
+        window.addEventListener('focus', () => {
+            if (this.isActive && !this.isPaused) {
+                this.syncFromTimestamp();
+                this.updateDisplay();
+            }
+        });
+    }
+
+    // Calculate elapsed seconds from timestamps (works even in background)
+    getElapsedSeconds() {
+        if (!this.startedAt) return 0;
+        const now = Date.now();
+        const pauseOffset = this.isPaused ? (now - this.pausedAt) : 0;
+        const totalElapsedMs = now - this.startedAt - this.totalPausedMs - pauseOffset;
+        return Math.floor(totalElapsedMs / 1000);
+    }
+
+    syncFromTimestamp() {
+        const elapsed = this.getElapsedSeconds();
+        // Check if meditation completed while in background
+        if (elapsed >= this.targetMinutes * 60) {
+            this.stop();
+        }
     }
 
     setDuration(minutes) {
@@ -24,20 +66,34 @@ class MeditationSystem {
         if (this.isActive) return;
         this.isActive = true;
         this.isPaused = false;
-        this.elapsedSeconds = 0;
         this.missedBreaths = 0;
+
+        // Use timestamp instead of counter
+        this.startedAt = Date.now();
+        this.pausedAt = null;
+        this.totalPausedMs = 0;
 
         document.getElementById('missed-breaths-count').textContent = '0';
         document.getElementById('start-meditation-btn').style.display = 'none';
         document.getElementById('pause-meditation-btn').style.display = 'inline-flex';
         document.getElementById('stop-meditation-btn').style.display = 'inline-flex';
 
+        // Interval only for display updates, actual time from timestamps
         this.interval = setInterval(() => this.tick(), 1000);
         this.updateDisplay();
     }
 
     pause() {
-        this.isPaused = !this.isPaused;
+        if (this.isPaused) {
+            // Resuming - add paused duration to total
+            this.totalPausedMs += Date.now() - this.pausedAt;
+            this.pausedAt = null;
+            this.isPaused = false;
+        } else {
+            // Pausing - record when we paused
+            this.pausedAt = Date.now();
+            this.isPaused = true;
+        }
         document.getElementById('pause-meditation-btn').textContent = this.isPaused ? '▶ Продолжить' : '⏸ Пауза';
     }
 
@@ -46,29 +102,35 @@ class MeditationSystem {
         clearInterval(this.interval);
         this.isActive = false;
 
-        const minutes = this.elapsedSeconds / 60;
+        const elapsedSeconds = this.getElapsedSeconds();
+        const minutes = elapsedSeconds / 60;
         this.completeMeditation(minutes, this.missedBreaths);
 
         document.getElementById('start-meditation-btn').style.display = 'inline-flex';
         document.getElementById('pause-meditation-btn').style.display = 'none';
         document.getElementById('stop-meditation-btn').style.display = 'none';
 
-        this.elapsedSeconds = 0;
+        // Reset timestamps
+        this.startedAt = null;
+        this.pausedAt = null;
+        this.totalPausedMs = 0;
         this.updateDisplay();
     }
 
     tick() {
         if (this.isPaused) return;
-        this.elapsedSeconds++;
+
+        const elapsedSeconds = this.getElapsedSeconds();
         this.updateDisplay();
 
-        if (this.elapsedSeconds >= this.targetMinutes * 60) {
+        if (elapsedSeconds >= this.targetMinutes * 60) {
             this.stop();
         }
     }
 
     updateDisplay() {
-        const remaining = Math.max(0, this.targetMinutes * 60 - this.elapsedSeconds);
+        const elapsedSeconds = this.getElapsedSeconds();
+        const remaining = Math.max(0, this.targetMinutes * 60 - elapsedSeconds);
         const mins = Math.floor(remaining / 60);
         const secs = remaining % 60;
         document.getElementById('timer-minutes').textContent = mins.toString().padStart(2, '0');
@@ -91,9 +153,9 @@ class MeditationSystem {
         const penaltyPercent = Math.min(80, missedBreaths * 2);
         const multiplier = 1 - (penaltyPercent / 100);
 
-        // Base rewards
-        const baseCoins = Math.floor(minutes * 10);
-        const baseXP = Math.floor(minutes * 5);
+        // Base rewards (reduced 5x for balance)
+        const baseCoins = Math.floor(minutes * 2);
+        const baseXP = Math.floor(minutes * 1);
 
         // Apply penalty
         const coins = Math.floor(baseCoins * multiplier);

@@ -582,6 +582,196 @@ const ORDINARY_PEOPLE_DATA = [
     }
 ];
 
+// === НОВЫЕ NPC ДЛЯ РАЗНЫХ ЗОН ===
+
+// NPC для горной зоны
+const MOUNTAIN_NPCS = [
+    {
+        id: 'mountain_hermit',
+        namePool: ['Ледяной Отшельник', 'Снежный Мудрец', 'Горный Йог'],
+        title: 'Хранитель Вершин',
+        ageRange: [60, 120],
+        meditationHoursRange: [10000, 50000],
+        levelRange: [500, 2000],
+        skin: 'mountain_hermit',
+        emoji: '🏔️',
+        color: '#E0FFFF',
+        rarity: 'epic',
+        dialoguePool: 'mountain',
+        zone: 'mountains'
+    },
+    {
+        id: 'snow_monk',
+        namePool: ['Монах Льда', 'Снежная Монахиня', 'Ледяной Аскет'],
+        title: 'Мастер Холодного Дыхания',
+        ageRange: [40, 80],
+        meditationHoursRange: [5000, 20000],
+        levelRange: [300, 1000],
+        skin: 'snow_monk',
+        emoji: '❄️',
+        color: '#B0E0E6',
+        rarity: 'rare',
+        dialoguePool: 'mountain',
+        zone: 'mountains'
+    }
+];
+
+// NPC для пустыни
+const DESERT_NPCS = [
+    {
+        id: 'sufi_master',
+        namePool: ['Суфий Руми', 'Дервиш Хусейн', 'Мастер Халиль'],
+        title: 'Танцующий Дервиш',
+        ageRange: [45, 90],
+        meditationHoursRange: [8000, 30000],
+        levelRange: [400, 1500],
+        skin: 'sufi',
+        emoji: '🌀',
+        color: '#F4A460',
+        rarity: 'epic',
+        dialoguePool: 'desert',
+        zone: 'desert'
+    },
+    {
+        id: 'caravan_elder',
+        namePool: ['Караванщик Али', 'Торговец Хасан', 'Странник Омар'],
+        title: 'Хранитель Оазиса',
+        ageRange: [50, 75],
+        meditationHoursRange: [2000, 8000],
+        levelRange: [150, 500],
+        skin: 'caravan',
+        emoji: '🐪',
+        color: '#DEB887',
+        rarity: 'rare',
+        dialoguePool: 'desert',
+        zone: 'desert'
+    }
+];
+
+// NPC для леса
+const FOREST_NPCS = [
+    {
+        id: 'druid',
+        namePool: ['Друид Дуб', 'Лесная Ведьма', 'Хранитель Рощи'],
+        title: 'Голос Леса',
+        ageRange: [80, 300],
+        meditationHoursRange: [15000, 60000],
+        levelRange: [600, 3000],
+        skin: 'druid',
+        emoji: '🌲',
+        color: '#228B22',
+        rarity: 'epic',
+        dialoguePool: 'forest',
+        zone: 'forest'
+    },
+    {
+        id: 'shaman',
+        namePool: ['Шаман Ворон', 'Шаманка Лиса', 'Дух-Видящий'],
+        title: 'Говорящий с Духами',
+        ageRange: [40, 90],
+        meditationHoursRange: [5000, 20000],
+        levelRange: [350, 1200],
+        skin: 'shaman',
+        emoji: '🔮',
+        color: '#8B4513',
+        rarity: 'rare',
+        dialoguePool: 'forest',
+        zone: 'forest'
+    },
+    {
+        id: 'mushroom_sage',
+        namePool: ['Грибной Мудрец', 'Хранитель Грибницы'],
+        title: 'Знаток Тайных Троп',
+        ageRange: [100, 500],
+        meditationHoursRange: [20000, 100000],
+        levelRange: [800, 5000],
+        skin: 'mushroom',
+        emoji: '🍄',
+        color: '#DA70D6',
+        rarity: 'legendary',
+        dialoguePool: 'forest',
+        zone: 'forest'
+    }
+];
+
+// NPC для побережья
+const BEACH_NPCS = [
+    {
+        id: 'ocean_master',
+        namePool: ['Мастер Волн', 'Океанский Мудрец', 'Водный Йог'],
+        title: 'Хранитель Глубин',
+        ageRange: [50, 100],
+        meditationHoursRange: [10000, 40000],
+        levelRange: [500, 2000],
+        skin: 'ocean_master',
+        emoji: '🌊',
+        color: '#00CED1',
+        rarity: 'epic',
+        dialoguePool: 'ocean',
+        zone: 'beach'
+    },
+    {
+        id: 'pearl_diver',
+        namePool: ['Жемчужная Дева', 'Ныряльщик', 'Искатель Глубин'],
+        title: 'Собиратель Жемчуга',
+        ageRange: [25, 50],
+        meditationHoursRange: [1000, 5000],
+        levelRange: [100, 400],
+        skin: 'diver',
+        emoji: '🐚',
+        color: '#FFB6C1',
+        rarity: 'rare',
+        dialoguePool: 'ocean',
+        zone: 'beach'
+    },
+    {
+        id: 'lighthouse_keeper',
+        namePool: ['Смотритель Маяка', 'Хранитель Света'],
+        title: 'Проводник Кораблей',
+        ageRange: [55, 80],
+        meditationHoursRange: [3000, 12000],
+        levelRange: [200, 600],
+        skin: 'lighthouse',
+        emoji: '🗼',
+        color: '#FFD700',
+        rarity: 'rare',
+        dialoguePool: 'ocean',
+        zone: 'beach'
+    }
+];
+
+// NPC для пещер
+const CAVE_NPCS = [
+    {
+        id: 'crystal_guardian',
+        namePool: ['Хранитель Кристаллов', 'Подземный Мудрец'],
+        title: 'Страж Глубин',
+        ageRange: [200, 1000],
+        meditationHoursRange: [50000, 200000],
+        levelRange: [2000, 10000],
+        skin: 'crystal',
+        emoji: '💎',
+        color: '#E0FFFF',
+        rarity: 'legendary',
+        dialoguePool: 'cave',
+        zone: 'caves'
+    },
+    {
+        id: 'cave_hermit',
+        namePool: ['Пещерный Отшельник', 'Тёмный Медитатор'],
+        title: 'Познавший Тьму',
+        ageRange: [70, 150],
+        meditationHoursRange: [20000, 80000],
+        levelRange: [800, 4000],
+        skin: 'cave_hermit',
+        emoji: '🕳️',
+        color: '#4A4A4A',
+        rarity: 'epic',
+        dialoguePool: 'cave',
+        zone: 'caves'
+    }
+];
+
 // === ГЕНЕРАЦИЯ СЛУЧАЙНЫХ NPC ===
 function generateRandomNPC(template, id) {
     const name = template.namePool
@@ -612,23 +802,25 @@ function generateRandomNPC(template, id) {
         color: template.color,
         rarity: template.rarity,
         dialoguePool: template.dialoguePool,
-        quotes: template.quotes || null
+        quotes: template.quotes || null,
+        zone: template.zone || 'center'
     };
 }
 
-// Генерируем мир NPC
+// Генерируем мир NPC (расширенная версия)
 function generateWorldNPCs(config = {}) {
     const {
         mastersCount = MASTERS_DATA.length,
-        practitionersCount = 30,
-        ordinaryCount = 50
+        practitionersCount = 40,
+        ordinaryCount = 60,
+        zoneNPCsCount = 30
     } = config;
 
     const npcs = [];
 
     // Добавляем мастеров
     MASTERS_DATA.slice(0, mastersCount).forEach(master => {
-        npcs.push({ ...master, isMaster: true });
+        npcs.push({ ...master, isMaster: true, zone: 'center' });
     });
 
     // Генерируем практикующих
@@ -643,6 +835,38 @@ function generateWorldNPCs(config = {}) {
         npcs.push(generateRandomNPC(template, i));
     }
 
+    // === ДОБАВЛЯЕМ NPC ДЛЯ КАЖДОЙ ЗОНЫ ===
+
+    // Горные NPC
+    for (let i = 0; i < 8; i++) {
+        const template = MOUNTAIN_NPCS[Math.floor(Math.random() * MOUNTAIN_NPCS.length)];
+        npcs.push(generateRandomNPC(template, `mtn_${i}`));
+    }
+
+    // Пустынные NPC
+    for (let i = 0; i < 8; i++) {
+        const template = DESERT_NPCS[Math.floor(Math.random() * DESERT_NPCS.length)];
+        npcs.push(generateRandomNPC(template, `dst_${i}`));
+    }
+
+    // Лесные NPC
+    for (let i = 0; i < 10; i++) {
+        const template = FOREST_NPCS[Math.floor(Math.random() * FOREST_NPCS.length)];
+        npcs.push(generateRandomNPC(template, `fst_${i}`));
+    }
+
+    // Пляжные NPC
+    for (let i = 0; i < 8; i++) {
+        const template = BEACH_NPCS[Math.floor(Math.random() * BEACH_NPCS.length)];
+        npcs.push(generateRandomNPC(template, `bch_${i}`));
+    }
+
+    // Пещерные NPC (редкие)
+    for (let i = 0; i < 4; i++) {
+        const template = CAVE_NPCS[Math.floor(Math.random() * CAVE_NPCS.length)];
+        npcs.push(generateRandomNPC(template, `cve_${i}`));
+    }
+
     return npcs;
 }
 
@@ -650,5 +874,10 @@ function generateWorldNPCs(config = {}) {
 window.MASTERS_DATA = MASTERS_DATA;
 window.PRACTITIONERS_DATA = PRACTITIONERS_DATA;
 window.ORDINARY_PEOPLE_DATA = ORDINARY_PEOPLE_DATA;
+window.MOUNTAIN_NPCS = MOUNTAIN_NPCS;
+window.DESERT_NPCS = DESERT_NPCS;
+window.FOREST_NPCS = FOREST_NPCS;
+window.BEACH_NPCS = BEACH_NPCS;
+window.CAVE_NPCS = CAVE_NPCS;
 window.generateWorldNPCs = generateWorldNPCs;
 window.generateRandomNPC = generateRandomNPC;

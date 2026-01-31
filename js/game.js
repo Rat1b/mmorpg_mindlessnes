@@ -10,8 +10,9 @@ class Game {
         this.gameState = storage.loadGame();
         this.map = new GameMap();
 
-        // ZOOM - масштаб камеры (2 = в 2 раза крупнее)
-        this.zoom = 2;
+        // ZOOM - автоматическое определение масштаба по размеру экрана
+        // ПК с большим экраном получает больший зум
+        this.zoom = this.calculateOptimalZoom();
 
         // Create player
         this.player = new Player({
@@ -31,6 +32,10 @@ class Game {
 
         // Meditation system
         this.meditation = new MeditationSystem(this.gameState, () => this.onMeditationUpdate());
+
+        // Quest system
+        this.quests = new QuestSystem(this.gameState);
+
 
         // Camera - размер вьюпорта в игровых координатах (делим на зум)
         this.camera = {
@@ -86,9 +91,24 @@ class Game {
         setInterval(() => this.save(), 30000);
     }
 
+    calculateOptimalZoom() {
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+        const screenSize = Math.max(screenWidth, screenHeight);
+
+        // Larger screens get more zoom for better visibility
+        if (screenSize >= 1920) return 3;      // 4K or large monitor
+        if (screenSize >= 1440) return 2.5;    // 1440p monitor
+        if (screenSize >= 1200) return 2.25;   // Standard PC monitor
+        if (screenSize >= 900) return 2;       // Small monitor / laptop
+        return 1.5;                             // Tablet / small screen
+    }
+
     resize() {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
+        // Recalculate zoom on resize
+        this.zoom = this.calculateOptimalZoom();
         this.camera.width = window.innerWidth / this.zoom;
         this.camera.height = window.innerHeight / this.zoom;
     }
