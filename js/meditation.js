@@ -120,7 +120,9 @@ class MeditationSystem {
         this.isActive = false;
 
         const elapsedSeconds = this.getElapsedSeconds();
-        const minutes = elapsedSeconds / 60;
+        // Cap the credited time to the target duration to prevent over-crediting
+        // if the user returns to the tab long after the timer finished.
+        const minutes = Math.min(elapsedSeconds / 60, this.targetMinutes);
         this.completeMeditation(minutes, this.missedBreaths);
 
         document.getElementById('start-meditation-btn').style.display = 'inline-flex';
