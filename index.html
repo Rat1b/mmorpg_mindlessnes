@@ -302,6 +302,16 @@
                     <input type="file" id="import-file" accept=".json" style="display:none"
                         onchange="importSaveData(event)">
                 </div>
+                <hr>
+                <div class="save-section">
+                    <h4>🔧 Восстановить прогресс</h4>
+                    <p style="font-size:12px;color:#aaa;margin-bottom:10px;">Если ваш прогресс сбросился, введите общее
+                        количество часов практики:</p>
+                    <div class="retro-input">
+                        <input type="number" id="restore-hours" placeholder="Часы" min="0" step="0.5">
+                        <button onclick="restoreTotalHours()">Установить</button>
+                    </div>
+                </div>
             </div>
         </div>
 

@@ -261,6 +261,29 @@ function setupDpad() {
     });
 }
 
+function restoreTotalHours() {
+    const input = document.getElementById('restore-hours');
+    if (!input) return;
+    const hours = parseFloat(input.value);
+    if (isNaN(hours) || hours < 0) {
+        alert('Введите корректное положительное число часов');
+        return;
+    }
+    const minutes = hours * 60;
+    if (storage.setTotalMinutes(minutes)) {
+        // Update game state if game is running
+        if (window.game && window.game.gameState) {
+            window.game.gameState.stats.totalMinutes = minutes;
+        }
+        // Update HUD
+        if (window.updateHUD && window.game) {
+            window.updateHUD(window.game.gameState);
+        }
+        alert(`Прогресс восстановлен: ${hours} часов (${Math.round(minutes)} минут)`);
+        input.value = '';
+    }
+}
+
 // Exports
 window.toggleMeditationPanel = toggleMeditationPanel;
 window.toggleStatsPanel = toggleStatsPanel;
@@ -272,3 +295,5 @@ window.updateQuestsDisplay = updateQuestsDisplay;
 window.updatePlayerName = updatePlayerName;
 window.updatePlayerAge = updatePlayerAge;
 window.setupDpad = setupDpad;
+window.restoreTotalHours = restoreTotalHours;
+

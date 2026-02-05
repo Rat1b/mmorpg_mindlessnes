@@ -74,13 +74,21 @@ function saveGame(gameState) {
 
 function exportSaveData() {
     const gameState = loadGame();
-    const blob = new Blob([JSON.stringify(gameState, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
+    const jsonStr = JSON.stringify(gameState, null, 2);
+    const filename = `breath_awareness_save_${utils.getDateKey()}.json`;
+
+    // Use data: URI for better iOS/iPad compatibility
+    // Encode as base64 to handle Cyrillic characters properly
+    const base64 = btoa(unescape(encodeURIComponent(jsonStr)));
+    const dataUri = `data:application/json;charset=utf-8;base64,${base64}`;
+
     const a = document.createElement('a');
-    a.href = url;
-    a.download = `breath_awareness_save_${utils.getDateKey()}.json`;
+    a.href = dataUri;
+    a.download = filename;
+    a.style.display = 'none';
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    document.body.removeChild(a);
 }
 
 function importSaveData(event) {
@@ -118,4 +126,17 @@ function updateStreak(gameState) {
     gameState.stats.lastPracticeDate = today;
 }
 
-window.storage = { loadGame, saveGame, exportSaveData, importSaveData, updateStreak, DEFAULT_SAVE };
+function setTotalMinutes(minutes) {
+    if (typeof minutes !== 'number' || minutes < 0) {
+        alert('Введите корректное положительное число минут');
+        return false;
+    }
+    const gameState = loadGame();
+    const oldMinutes = gameState.stats.totalMinutes;
+    gameState.stats.totalMinutes = minutes;
+    saveGame(gameState);
+    console.log(`Total minutes updated: ${oldMinutes} -> ${minutes}`);
+    return true;
+}
+
+window.storage = { loadGame, saveGame, exportSaveData, importSaveData, updateStreak, setTotalMinutes, DEFAULT_SAVE };
