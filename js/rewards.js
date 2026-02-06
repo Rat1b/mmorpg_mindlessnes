@@ -101,7 +101,7 @@ function updateHUD(gameState) {
     document.getElementById('prana-coins').textContent = utils.formatNumber(gameState.currency.pranaCoins);
     document.getElementById('gems').textContent = utils.formatNumber(gameState.currency.gems);
 
-    // Stats panel
+    // Stats panel - Practice 1
     const today = utils.getDateKey();
     const todayMins = gameState.stats.dailyMinutes[today] || 0;
     document.getElementById('stat-today').textContent = utils.formatTime(todayMins);
@@ -112,6 +112,21 @@ function updateHUD(gameState) {
         ? Math.round((gameState.stats.perfectSessions / gameState.stats.totalSessions) * 100)
         : 100;
     document.getElementById('stat-accuracy').textContent = accuracy + '%';
+
+    // Stats panel - Practice 2
+    if (gameState.stats2) {
+        const todayMins2 = (gameState.stats2.dailyMinutes && gameState.stats2.dailyMinutes[today]) || 0;
+        const el1 = document.getElementById('stat-today-2');
+        const el2 = document.getElementById('stat-total-2');
+        const el3 = document.getElementById('stat-accuracy-2');
+        if (el1) el1.textContent = utils.formatTime(todayMins2);
+        if (el2) el2.textContent = utils.formatTime(gameState.stats2.totalMinutes || 0);
+
+        const accuracy2 = (gameState.stats2.totalSessions || 0) > 0
+            ? Math.round(((gameState.stats2.perfectSessions || 0) / gameState.stats2.totalSessions) * 100)
+            : 100;
+        if (el3) el3.textContent = accuracy2 + '%';
+    }
 }
 
 window.showRewardPopup = showRewardPopup;

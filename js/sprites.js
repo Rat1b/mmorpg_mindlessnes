@@ -235,8 +235,8 @@ function drawCharacterInfo(ctx, x, y, character) {
     lines.push({ text: `⏱ ${hours}`, color: '#AAFFAA', bold: false });
 
     // Строка 4: Практика 2 (только для игрока - isPlayer)
-    if (character.isPlayer && character.meditationHours2 !== undefined) {
-        const hours2 = character.meditationHours2 === Infinity ? '∞' : utils.formatTime(character.meditationHours2 * 60);
+    if (character.isPlayer) {
+        const hours2 = (character.meditationHours2 === Infinity) ? '∞' : utils.formatTime((character.meditationHours2 || 0) * 60);
         lines.push({ text: `⏱2 ${hours2}`, color: '#FFAAFF', bold: false });
     }
 
