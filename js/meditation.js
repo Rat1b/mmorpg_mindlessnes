@@ -550,6 +550,25 @@ class MeditationSystem2 {
         const xp = Math.floor(baseXP * multiplier);
 
         const today = utils.getDateKey();
+
+        // Защитная инициализация для старых сейвов
+        if (!this.gameState.stats2) {
+            this.gameState.stats2 = {
+                totalMinutes: 0,
+                totalSessions: 0,
+                totalMissedBreaths: 0,
+                perfectSessions: 0,
+                streak: 0,
+                lastPracticeDate: null,
+                dailyMinutes: {},
+                weeklyMinutes: {},
+                monthlyMinutes: {}
+            };
+        }
+        if (!this.gameState.stats2.dailyMinutes) {
+            this.gameState.stats2.dailyMinutes = {};
+        }
+
         this.gameState.stats2.totalMinutes += minutes;
         this.gameState.stats2.totalSessions++;
         this.gameState.stats2.totalMissedBreaths += missedBreaths;
