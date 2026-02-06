@@ -9,6 +9,8 @@ class Character {
         this.title = data.title || '';
         this.age = data.age || 25;
         this.meditationHours = data.meditationHours || 0;
+        this.meditationHours2 = data.meditationHours2 || 0;
+        this.isPlayer = data.isPlayer || false;
         this.level = data.level || 1;
         this.skin = data.skin || 'casual_male';
         this.emoji = data.emoji || '👤';
