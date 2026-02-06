@@ -220,7 +220,7 @@ function drawCharacterInfo(ctx, x, y, character) {
     ctx.textAlign = 'center';
     ctx.font = 'bold 11px Philosopher';
 
-    // Подготавливаем строки для отображения
+    // Подготавливаем строки для отображения (над головой)
     const lines = [];
 
     // Строка 1: Имя
@@ -233,12 +233,6 @@ function drawCharacterInfo(ctx, x, y, character) {
     // Строка 3: Время практики
     const hours = character.meditationHours === Infinity ? '∞' : utils.formatTime(character.meditationHours * 60);
     lines.push({ text: `⏱ ${hours}`, color: '#AAFFAA', bold: false });
-
-    // Строка 4: Практика 2 (только для игрока - isPlayer)
-    if (character.isPlayer) {
-        const hours2 = (character.meditationHours2 === Infinity) ? '∞' : utils.formatTime((character.meditationHours2 || 0) * 60);
-        lines.push({ text: `⏱2 ${hours2}`, color: '#FFAAFF', bold: false });
-    }
 
     // Рассчитываем размеры фона
     const lineHeight = 14;
@@ -269,11 +263,21 @@ function drawCharacterInfo(ctx, x, y, character) {
         textY += lineHeight;
     });
 
-    // Уровень (ПОД персонажем, с запасом) - всегда показывать
+    // === НИЖНЯЯ КОРОБКА (под персонажем) ===
     const lvl = character.level || 1;
     const lvlText = `Lv.${utils.formatNumber(lvl)}`;
+
+    // Для игрока добавляем время практики 2
+    let bottomText = lvlText;
+    let bottomWidth;
+
+    if (character.isPlayer) {
+        const hours2 = (character.meditationHours2 === Infinity) ? '∞' : utils.formatTime((character.meditationHours2 || 0) * 60);
+        bottomText = `${lvlText} | ⏱2 ${hours2}`;
+    }
+
     ctx.font = 'bold 10px Philosopher';
-    const lvlWidth = ctx.measureText(lvlText).width;
+    bottomWidth = ctx.measureText(bottomText).width;
 
     // Цвет по уровню
     let lvlColor = '#4CAF50';
@@ -283,10 +287,10 @@ function drawCharacterInfo(ctx, x, y, character) {
     else if (lvl > 50) lvlColor = '#00BCD4';
 
     ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-    ctx.fillRect(x - lvlWidth / 2 - 5, y + 18, lvlWidth + 10, 14);
+    ctx.fillRect(x - bottomWidth / 2 - 5, y + 18, bottomWidth + 10, 14);
 
     ctx.fillStyle = lvlColor;
-    ctx.fillText(lvlText, x, y + 29);
+    ctx.fillText(bottomText, x, y + 29);
 }
 
 window.sprites = { drawCharacter, drawCharacterInfo, generateCharacterSprites, SPRITE_SIZE };
