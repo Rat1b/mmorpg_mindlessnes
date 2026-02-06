@@ -273,7 +273,7 @@ function drawCharacterInfo(ctx, x, y, character) {
 
     if (character.isPlayer) {
         const hours2 = (character.meditationHours2 === Infinity) ? '∞' : utils.formatTime((character.meditationHours2 || 0) * 60);
-        bottomText = `${lvlText} | ⏱2 ${hours2}`;
+        bottomText = `${lvlText} | ${hours2}`;
     }
 
     ctx.font = 'bold 10px Philosopher';
