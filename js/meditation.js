@@ -353,4 +353,278 @@ function addRetroactiveMeditation() {
     }
 }
 
+// ========================================
+// MeditationSystem2 - Second practice timer
+// ========================================
+
+class MeditationSystem2 {
+    constructor(gameState, onUpdate) {
+        this.gameState = gameState;
+        this.onUpdate = onUpdate;
+
+        this.interval = null;
+        this.isActive = false;
+        this.isPaused = false;
+
+        this.targetMinutes = 10;
+        this.startedAt = null;
+        this.pausedAt = null;
+        this.totalPausedMs = 0;
+        this.missedBreaths = 0;
+
+        if (this.gameState.activeMeditation2) {
+            this.resumeFromStorage();
+        }
+
+        this.setupVisibilityHandler();
+    }
+
+    setupVisibilityHandler() {
+        document.addEventListener('visibilitychange', () => {
+            if (this.isActive && !this.isPaused) {
+                this.syncFromTimestamp();
+                this.updateDisplay();
+            }
+        });
+
+        window.addEventListener('focus', () => {
+            if (this.isActive && !this.isPaused) {
+                this.syncFromTimestamp();
+                this.updateDisplay();
+            }
+        });
+    }
+
+    getElapsedSeconds() {
+        if (!this.startedAt) return 0;
+        const now = Date.now();
+        const pauseOffset = this.isPaused ? (now - this.pausedAt) : 0;
+        const totalElapsedMs = now - this.startedAt - this.totalPausedMs - pauseOffset;
+        return Math.floor(totalElapsedMs / 1000);
+    }
+
+    syncFromTimestamp() {
+        const elapsed = this.getElapsedSeconds();
+        if (elapsed >= this.targetMinutes * 60) {
+            this.stop();
+        }
+    }
+
+    setDuration(minutes) {
+        this.targetMinutes = minutes;
+        this.updateDisplay();
+    }
+
+    start() {
+        if (this.isActive) return;
+        this.isActive = true;
+        this.isPaused = false;
+        this.missedBreaths = 0;
+
+        this.startedAt = Date.now();
+        this.pausedAt = null;
+        this.totalPausedMs = 0;
+
+        this.gameState.activeMeditation2 = {
+            startTime: this.startedAt,
+            targetMinutes: this.targetMinutes,
+            missedBreaths: 0
+        };
+        storage.saveGame(this.gameState);
+
+        document.getElementById('missed-breaths-count-2').textContent = '0';
+        document.getElementById('start-meditation-btn-2').style.display = 'none';
+        document.getElementById('pause-meditation-btn-2').style.display = 'inline-flex';
+        document.getElementById('stop-meditation-btn-2').style.display = 'inline-flex';
+
+        this.interval = setInterval(() => this.tick(), 1000);
+        this.updateDisplay();
+    }
+
+    pause() {
+        if (this.isPaused) {
+            this.totalPausedMs += Date.now() - this.pausedAt;
+            this.pausedAt = null;
+            this.isPaused = false;
+        } else {
+            this.pausedAt = Date.now();
+            this.isPaused = true;
+        }
+        document.getElementById('pause-meditation-btn-2').textContent = this.isPaused ? '▶ Продолжить' : '⏸ Пауза';
+    }
+
+    stop() {
+        if (!this.isActive) return;
+        clearInterval(this.interval);
+        this.isActive = false;
+
+        const elapsedSeconds = this.getElapsedSeconds();
+        const minutes = Math.min(elapsedSeconds / 60, this.targetMinutes);
+        this.completeMeditation(minutes, this.missedBreaths);
+
+        document.getElementById('start-meditation-btn-2').style.display = 'inline-flex';
+        document.getElementById('pause-meditation-btn-2').style.display = 'none';
+        document.getElementById('stop-meditation-btn-2').style.display = 'none';
+
+        this.startedAt = null;
+        this.pausedAt = null;
+        this.totalPausedMs = 0;
+        this.updateDisplay();
+
+        delete this.gameState.activeMeditation2;
+        storage.saveGame(this.gameState);
+    }
+
+    resumeFromStorage() {
+        const session = this.gameState.activeMeditation2;
+        if (!session) return;
+
+        const now = Date.now();
+        const elapsedMinutes = (now - session.startTime) / 60000;
+
+        if (elapsedMinutes >= session.targetMinutes) {
+            this.startedAt = session.startTime;
+            this.targetMinutes = session.targetMinutes;
+            this.missedBreaths = session.missedBreaths || 0;
+
+            delete this.gameState.activeMeditation2;
+            storage.saveGame(this.gameState);
+
+            this.completeMeditation(this.targetMinutes, this.missedBreaths);
+        } else {
+            this.isActive = true;
+            this.isPaused = false;
+            this.targetMinutes = session.targetMinutes;
+            this.startedAt = session.startTime;
+            this.missedBreaths = session.missedBreaths || 0;
+            this.totalPausedMs = 0;
+
+            document.getElementById('start-meditation-btn-2').style.display = 'none';
+            document.getElementById('pause-meditation-btn-2').style.display = 'inline-flex';
+            document.getElementById('stop-meditation-btn-2').style.display = 'inline-flex';
+
+            this.interval = setInterval(() => this.tick(), 100);
+            this.updateDisplay();
+        }
+    }
+
+    tick() {
+        if (this.isPaused) return;
+
+        const elapsedSeconds = this.getElapsedSeconds();
+        this.updateDisplay();
+
+        if (elapsedSeconds >= this.targetMinutes * 60) {
+            this.stop();
+        }
+    }
+
+    updateDisplay() {
+        const elapsedSeconds = this.getElapsedSeconds();
+        const remaining = Math.max(0, this.targetMinutes * 60 - elapsedSeconds);
+        const mins = Math.floor(remaining / 60);
+        const secs = remaining % 60;
+        document.getElementById('timer-minutes-2').textContent = mins.toString().padStart(2, '0');
+        document.getElementById('timer-seconds-2').textContent = secs.toString().padStart(2, '0');
+    }
+
+    adjustMissedBreaths(delta) {
+        this.missedBreaths = Math.max(0, this.missedBreaths + delta);
+        document.getElementById('missed-breaths-count-2').textContent = this.missedBreaths;
+    }
+
+    addRetroactive(minutes, missed = 0) {
+        this.completeMeditation(minutes, missed, true);
+    }
+
+    completeMeditation(minutes, missedBreaths, isRetroactive = false) {
+        if (minutes < 0.1) return;
+
+        const penaltyPercent = Math.min(80, missedBreaths * 2);
+        const multiplier = 1 - (penaltyPercent / 100);
+
+        const baseCoins = Math.floor(minutes * 2);
+        const baseXP = Math.floor(minutes * 1);
+
+        const coins = Math.floor(baseCoins * multiplier);
+        const xp = Math.floor(baseXP * multiplier);
+
+        const today = utils.getDateKey();
+        this.gameState.stats2.totalMinutes += minutes;
+        this.gameState.stats2.totalSessions++;
+        this.gameState.stats2.totalMissedBreaths += missedBreaths;
+        if (missedBreaths === 0 && minutes >= 5) {
+            this.gameState.stats2.perfectSessions++;
+        }
+
+        if (!this.gameState.stats2.dailyMinutes[today]) {
+            this.gameState.stats2.dailyMinutes[today] = 0;
+        }
+        this.gameState.stats2.dailyMinutes[today] += minutes;
+
+        this.gameState.currency.pranaCoins += coins;
+
+        storage.saveGame(this.gameState);
+
+        const rewards = [
+            { icon: '✨', amount: `+${coins}`, label: 'Прана' },
+            { icon: '⭐', amount: `+${xp}`, label: 'Опыт' }
+        ];
+
+        if (penaltyPercent > 0) {
+            rewards.push({ icon: '⚠️', amount: `-${penaltyPercent}%`, label: 'Штраф (дыхание)' });
+        }
+
+        if (isRetroactive) {
+            rewards.push({ icon: '📅', amount: '', label: 'Заднее число' });
+        }
+
+        showRewardPopup(rewards);
+        this.onUpdate();
+    }
+}
+
+// Practice 2 helper functions
+function startMeditation2() {
+    if (window.game && window.game.meditation2) {
+        window.game.meditation2.start();
+    }
+}
+
+function pauseMeditation2() {
+    if (window.game && window.game.meditation2) {
+        window.game.meditation2.pause();
+    }
+}
+
+function stopMeditation2() {
+    if (window.game && window.game.meditation2) {
+        window.game.meditation2.stop();
+    }
+}
+
+function adjustMissedBreaths2(delta) {
+    if (window.game && window.game.meditation2) {
+        window.game.meditation2.adjustMissedBreaths(delta);
+    }
+}
+
+function setCustomTimer2() {
+    const minutes = parseInt(document.getElementById('custom-minutes-2').value);
+    if (minutes > 0 && minutes <= 180) {
+        window.game.meditation2.setDuration(minutes);
+    }
+}
+
+function addRetroactiveMeditation2() {
+    const minutes = parseInt(document.getElementById('retro-minutes-2').value);
+    const missed = parseInt(document.getElementById('retro-missed-2').value) || 0;
+    if (minutes > 0) {
+        window.game.meditation2.addRetroactive(minutes, missed);
+        document.getElementById('retro-minutes-2').value = '';
+        document.getElementById('retro-missed-2').value = '0';
+    }
+}
+
 window.MeditationSystem = MeditationSystem;
+window.MeditationSystem2 = MeditationSystem2;

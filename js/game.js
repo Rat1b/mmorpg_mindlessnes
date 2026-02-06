@@ -22,6 +22,8 @@ class Game {
             y: this.gameState.player.y || 1280,
             level: utils.calculateLevel(this.gameState.stats.totalMinutes),
             meditationHours: this.gameState.stats.totalMinutes / 60,
+            meditationHours2: this.gameState.stats2.totalMinutes / 60,
+            isPlayer: true,
             color: '#4169E1',
             emoji: '🧘'
         });
@@ -32,6 +34,9 @@ class Game {
 
         // Meditation system
         this.meditation = new MeditationSystem(this.gameState, () => this.onMeditationUpdate());
+
+        // Meditation system 2 (second practice)
+        this.meditation2 = new MeditationSystem2(this.gameState, () => this.onMeditationUpdate());
 
         // Quest system
         this.quests = new QuestSystem(this.gameState);
@@ -301,6 +306,7 @@ class Game {
 
     onMeditationUpdate() {
         this.player.meditationHours = this.gameState.stats.totalMinutes / 60;
+        this.player.meditationHours2 = this.gameState.stats2.totalMinutes / 60;
         this.player.level = utils.calculateLevel(this.gameState.stats.totalMinutes);
         updateHUD(this.gameState);
     }

@@ -37,6 +37,7 @@ function togglePanel(panelId) {
 }
 
 function toggleMeditationPanel() { togglePanel('meditation-panel'); }
+function toggleMeditationPanel2() { togglePanel('meditation-panel-2'); }
 function toggleStatsPanel() { togglePanel('stats-panel'); }
 function toggleGachaPanel() { togglePanel('gacha-panel'); }
 function toggleSettingsPanel() { togglePanel('settings-panel'); }
@@ -286,6 +287,7 @@ function restoreTotalHours() {
 
 // Exports
 window.toggleMeditationPanel = toggleMeditationPanel;
+window.toggleMeditationPanel2 = toggleMeditationPanel2;
 window.toggleStatsPanel = toggleStatsPanel;
 window.toggleGachaPanel = toggleGachaPanel;
 window.toggleSettingsPanel = toggleSettingsPanel;

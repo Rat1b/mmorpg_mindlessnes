@@ -218,31 +218,56 @@ function drawCharacter(ctx, x, y, character, frame = 0) {
 
 function drawCharacterInfo(ctx, x, y, character) {
     ctx.textAlign = 'center';
-
-    // Имя (высоко над головой)
-    const name = character.name;
     ctx.font = 'bold 11px Philosopher';
-    const nameWidth = ctx.measureText(name).width;
 
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
-    ctx.fillRect(x - nameWidth / 2 - 5, y - 58, nameWidth + 10, 16);
+    // Подготавливаем строки для отображения
+    const lines = [];
 
-    ctx.fillStyle = character.color || '#FFFFFF';
-    ctx.fillText(name, x, y - 46);
+    // Строка 1: Имя
+    lines.push({ text: character.name, color: character.color || '#FFFFFF', bold: true });
 
-    // Возраст и часы (под именем, с отступом)
+    // Строка 2: Возраст
     const age = character.age === Infinity ? '∞' : character.age;
+    lines.push({ text: `${age} лет`, color: '#AADDFF', bold: false });
+
+    // Строка 3: Время практики
     const hours = character.meditationHours === Infinity ? '∞' : utils.formatTime(character.meditationHours * 60);
-    const statsText = `${age}л | ${hours}`;
+    lines.push({ text: `⏱ ${hours}`, color: '#AAFFAA', bold: false });
 
-    ctx.font = '9px Philosopher';
-    const statsWidth = ctx.measureText(statsText).width;
+    // Строка 4: Практика 2 (только для игрока - isPlayer)
+    if (character.isPlayer && character.meditationHours2 !== undefined) {
+        const hours2 = character.meditationHours2 === Infinity ? '∞' : utils.formatTime(character.meditationHours2 * 60);
+        lines.push({ text: `⏱2 ${hours2}`, color: '#FFAAFF', bold: false });
+    }
 
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-    ctx.fillRect(x - statsWidth / 2 - 4, y - 42, statsWidth + 8, 13);
+    // Рассчитываем размеры фона
+    const lineHeight = 14;
+    const padding = 4;
+    const totalHeight = lines.length * lineHeight + padding * 2;
 
-    ctx.fillStyle = '#CCCCEE';
-    ctx.fillText(statsText, x, y - 32);
+    // Находим максимальную ширину
+    let maxWidth = 0;
+    lines.forEach(line => {
+        ctx.font = line.bold ? 'bold 11px Philosopher' : '10px Philosopher';
+        const w = ctx.measureText(line.text).width;
+        if (w > maxWidth) maxWidth = w;
+    });
+    maxWidth += padding * 2 + 6;
+
+    // Рисуем фон
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+    const bgX = x - maxWidth / 2;
+    const bgY = y - 58 - (lines.length - 2) * lineHeight;
+    ctx.fillRect(bgX, bgY, maxWidth, totalHeight);
+
+    // Рисуем текст
+    let textY = bgY + lineHeight;
+    lines.forEach(line => {
+        ctx.font = line.bold ? 'bold 11px Philosopher' : '10px Philosopher';
+        ctx.fillStyle = line.color;
+        ctx.fillText(line.text, x, textY);
+        textY += lineHeight;
+    });
 
     // Уровень (ПОД персонажем, с запасом) - всегда показывать
     const lvl = character.level || 1;

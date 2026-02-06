@@ -98,6 +98,68 @@
             </div>
         </div>
 
+        <!-- Meditation Timer Panel 2 -->
+        <div id="meditation-panel-2" class="side-panel">
+            <div class="panel-header">
+                <span>🧘 Практика 2</span>
+                <button class="close-btn" onclick="toggleMeditationPanel2()">×</button>
+            </div>
+            <div class="panel-content">
+                <div class="timer-display">
+                    <span id="timer-minutes-2">00</span>:<span id="timer-seconds-2">00</span>
+                </div>
+                <div class="timer-controls">
+                    <button class="timer-preset" data-minutes="5" onclick="window.game.meditation2.setDuration(5)">5
+                        мин</button>
+                    <button class="timer-preset" data-minutes="10" onclick="window.game.meditation2.setDuration(10)">10
+                        мин</button>
+                    <button class="timer-preset" data-minutes="15" onclick="window.game.meditation2.setDuration(15)">15
+                        мин</button>
+                    <button class="timer-preset" data-minutes="30" onclick="window.game.meditation2.setDuration(30)">30
+                        мин</button>
+                    <button class="timer-preset" data-minutes="60" onclick="window.game.meditation2.setDuration(60)">1
+                        час</button>
+                </div>
+                <div class="custom-timer">
+                    <input type="number" id="custom-minutes-2" placeholder="Минуты" min="1" max="180">
+                    <button onclick="setCustomTimer2()">Установить</button>
+                </div>
+                <div class="meditation-buttons">
+                    <button id="start-meditation-btn-2" class="action-btn start-btn" onclick="startMeditation2()">
+                        ▶ Начать
+                    </button>
+                    <button id="pause-meditation-btn-2" class="action-btn pause-btn" onclick="pauseMeditation2()"
+                        style="display:none;">
+                        ⏸ Пауза
+                    </button>
+                    <button id="stop-meditation-btn-2" class="action-btn stop-btn" onclick="stopMeditation2()"
+                        style="display:none;">
+                        ⏹ Завершить
+                    </button>
+                </div>
+
+                <!-- Missed Breaths Counter -->
+                <div class="missed-breaths-section">
+                    <h4>Пропущенные вдохи</h4>
+                    <div class="missed-counter">
+                        <button class="minus-btn" onclick="adjustMissedBreaths2(-1)">−</button>
+                        <span id="missed-breaths-count-2">0</span>
+                        <button class="plus-btn" onclick="adjustMissedBreaths2(1)">+</button>
+                    </div>
+                    <p class="hint-text">Каждый пропущенный вдох уменьшает награду на 2%</p>
+                </div>
+
+                <div class="retroactive-section">
+                    <h4>Добавить задним числом</h4>
+                    <div class="retro-input">
+                        <input type="number" id="retro-minutes-2" placeholder="Минуты" min="1">
+                        <input type="number" id="retro-missed-2" placeholder="Пропущено" min="0" value="0">
+                        <button onclick="addRetroactiveMeditation2()">Добавить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Stats Panel -->
         <div id="stats-panel" class="side-panel">
             <div class="panel-header">
@@ -240,6 +302,10 @@
             <button class="menu-btn" onclick="toggleMeditationPanel()">
                 <span class="menu-icon">🧘</span>
                 <span>Практика</span>
+            </button>
+            <button class="menu-btn" onclick="toggleMeditationPanel2()">
+                <span class="menu-icon">🧘</span>
+                <span>Практика 2</span>
             </button>
             <button class="menu-btn" onclick="toggleStatsPanel()">
                 <span class="menu-icon">📊</span>

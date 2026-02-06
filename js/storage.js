@@ -26,6 +26,17 @@ const DEFAULT_SAVE = {
         weeklyMinutes: {},
         monthlyMinutes: {}
     },
+    stats2: {
+        totalMinutes: 0,
+        totalSessions: 0,
+        totalMissedBreaths: 0,
+        perfectSessions: 0,
+        streak: 0,
+        lastPracticeDate: null,
+        dailyMinutes: {},
+        weeklyMinutes: {},
+        monthlyMinutes: {}
+    },
     currency: {
         pranaCoins: 100,
         gems: 10
@@ -53,7 +64,7 @@ function loadGame() {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) {
             const data = JSON.parse(saved);
-            return { ...DEFAULT_SAVE, ...data, player: { ...DEFAULT_SAVE.player, ...data.player }, stats: { ...DEFAULT_SAVE.stats, ...data.stats }, currency: { ...DEFAULT_SAVE.currency, ...data.currency }, settings: { ...DEFAULT_SAVE.settings, ...data.settings } };
+            return { ...DEFAULT_SAVE, ...data, player: { ...DEFAULT_SAVE.player, ...data.player }, stats: { ...DEFAULT_SAVE.stats, ...data.stats }, stats2: { ...DEFAULT_SAVE.stats2, ...data.stats2 }, currency: { ...DEFAULT_SAVE.currency, ...data.currency }, settings: { ...DEFAULT_SAVE.settings, ...data.settings } };
         }
     } catch (e) {
         console.error('Ошибка загрузки:', e);
