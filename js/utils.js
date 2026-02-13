@@ -11,6 +11,20 @@ function formatTime(minutes) {
     return `${days} д ${hours % 24} ч`;
 }
 
+// Полный формат с минутами — для игрока над головой
+function formatTimeFull(minutes) {
+    if (minutes < 60) return `${Math.round(minutes)} мин`;
+    const hours = Math.floor(minutes / 60);
+    const mins = Math.round(minutes % 60);
+    if (hours < 24) return mins > 0 ? `${hours} ч ${mins} мин` : `${hours} ч`;
+    const days = Math.floor(hours / 24);
+    const remHours = hours % 24;
+    const parts = [`${days} д`];
+    if (remHours > 0) parts.push(`${remHours} ч`);
+    if (mins > 0) parts.push(`${mins} мин`);
+    return parts.join(' ');
+}
+
 function formatNumber(num) {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
     if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
@@ -110,7 +124,7 @@ function debounce(func, wait) {
 }
 
 window.utils = {
-    formatTime, formatNumber, randomRange, randomInt, randomChoice,
+    formatTime, formatTimeFull, formatNumber, randomRange, randomInt, randomChoice,
     clamp, lerp, distance, calculateLevel, calculateXPForLevel,
     calculateXPProgress, getDateKey, getWeekKey, getMonthKey, debounce
 };

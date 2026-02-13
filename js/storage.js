@@ -87,19 +87,30 @@ function exportSaveData() {
     const gameState = loadGame();
     const jsonStr = JSON.stringify(gameState, null, 2);
     const filename = `breath_awareness_save_${utils.getDateKey()}.json`;
+    const blob = new Blob([jsonStr], { type: 'application/json' });
 
-    // Use data: URI for better iOS/iPad compatibility
-    // Encode as base64 to handle Cyrillic characters properly
-    const base64 = btoa(unescape(encodeURIComponent(jsonStr)));
-    const dataUri = `data:application/json;charset=utf-8;base64,${base64}`;
+    // На iOS/iPad используем Web Share API — он правильно сохраняет имя файла
+    if (navigator.share && navigator.canShare) {
+        const file = new File([blob], filename, { type: 'application/json' });
+        const shareData = { files: [file] };
+        if (navigator.canShare(shareData)) {
+            navigator.share(shareData).catch(() => {
+                // Если пользователь отменил — ничего не делаем
+            });
+            return;
+        }
+    }
 
+    // Fallback для десктопных браузеров
+    const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = dataUri;
+    a.href = url;
     a.download = filename;
     a.style.display = 'none';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
 }
 
 function importSaveData(event) {

@@ -230,8 +230,9 @@ function drawCharacterInfo(ctx, x, y, character) {
     const age = character.age === Infinity ? '∞' : character.age;
     lines.push({ text: `${age} лет`, color: '#AADDFF', bold: false });
 
-    // Строка 3: Время практики
-    const hours = character.meditationHours === Infinity ? '∞' : utils.formatTime(character.meditationHours * 60);
+    // Строка 3: Время практики (игрок видит минуты, у NPC — короткий формат)
+    const formatFn = character.isPlayer ? utils.formatTimeFull : utils.formatTime;
+    const hours = character.meditationHours === Infinity ? '∞' : formatFn(character.meditationHours * 60);
     lines.push({ text: `⏱ ${hours}`, color: '#AAFFAA', bold: false });
 
     // Рассчитываем размеры фона
