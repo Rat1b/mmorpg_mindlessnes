@@ -102,19 +102,46 @@ function exportSaveWin() {
 function exportSaveIOS() {
     const gameState = loadGame();
     const jsonStr = JSON.stringify(gameState, null, 2);
-    const filename = `breath_awareness_save_${utils.getDateKey()}.json`;
-    const blob = new Blob([jsonStr], { type: 'application/json' });
 
-    if (navigator.share && navigator.canShare) {
-        const file = new File([blob], filename, { type: 'application/json' });
-        const shareData = { files: [file] };
-        if (navigator.canShare(shareData)) {
-            navigator.share(shareData).catch(() => { });
-            return;
-        }
+    // Копируем в буфер обмена
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(jsonStr).then(() => {
+            alert('✅ JSON скопирован в буфер обмена!\n\nОткрой приложение «Файлы» или «Заметки», вставь текст и сохрани как .json');
+        }).catch(() => {
+            showCopyFallback(jsonStr);
+        });
+    } else {
+        showCopyFallback(jsonStr);
     }
-    // Fallback если Share API недоступен
-    alert('Web Share API недоступен на этом устройстве. Используйте кнопку "Скачать (Win)".');
+}
+
+function showCopyFallback(jsonStr) {
+    // Показываем textarea для ручного копирования
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;';
+
+    const title = document.createElement('div');
+    title.textContent = '📋 Выдели всё и скопируй:';
+    title.style.cssText = 'color:white;font-size:16px;margin-bottom:10px;';
+
+    const ta = document.createElement('textarea');
+    ta.value = jsonStr;
+    ta.style.cssText = 'width:100%;max-width:500px;height:60%;background:#1a1a2e;color:#0f0;border:1px solid #444;border-radius:8px;padding:10px;font-size:12px;font-family:monospace;';
+    ta.readOnly = true;
+
+    const closeBtn = document.createElement('button');
+    closeBtn.textContent = '✖ Закрыть';
+    closeBtn.style.cssText = 'margin-top:10px;padding:10px 30px;background:#e74c3c;color:white;border:none;border-radius:8px;font-size:16px;cursor:pointer;';
+    closeBtn.onclick = () => document.body.removeChild(overlay);
+
+    overlay.appendChild(title);
+    overlay.appendChild(ta);
+    overlay.appendChild(closeBtn);
+    document.body.appendChild(overlay);
+
+    // Выделяем текст
+    ta.focus();
+    ta.select();
 }
 
 function importSaveData(event) {
