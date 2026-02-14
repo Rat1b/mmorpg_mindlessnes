@@ -368,6 +368,10 @@
                 <span class="menu-icon">🎉</span>
                 <span>События</span>
             </button>
+            <button class="menu-btn" onclick="toggleHabitPanel()">
+                <span class="menu-icon">🧠</span>
+                <span>Анализ</span>
+            </button>
             <button class="menu-btn" onclick="toggleSettingsPanel()">
                 <span class="menu-icon">⚙️</span>
                 <span>Настройки</span>
@@ -526,6 +530,17 @@
             </div>
         </div>
 
+        <!-- Habit Analysis Panel -->
+        <div id="habit-panel" class="side-panel large-panel">
+            <div class="panel-header">
+                <span>🧠 Нейроанализ привычки</span>
+                <button class="close-btn" onclick="toggleHabitPanel()">×</button>
+            </div>
+            <div class="panel-content" id="habit-analysis-content">
+                <p style="color:var(--text-secondary);text-align:center;">Загрузка анализа...</p>
+            </div>
+        </div>
+
         <!-- Achievements Panel -->
         <div id="achievements-panel" class="side-panel large-panel">
             <div class="panel-header">
@@ -565,6 +580,7 @@
     <script src="js/temples.js"></script>
     <script src="js/ext-stats.js"></script>
     <script src="js/events.js"></script>
+    <script src="js/habit-analysis.js"></script>
     <script src="js/game.js"></script>
 </body>
 

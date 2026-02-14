@@ -64,6 +64,9 @@ class Game {
         // Events
         this.events = new EventSystem(this.gameState);
 
+        // Habit Analysis
+        this.habitAnalysis = new HabitAnalysis(this.gameState);
+
 
         // Camera - размер вьюпорта в игровых координатах (делим на зум)
         this.camera = {

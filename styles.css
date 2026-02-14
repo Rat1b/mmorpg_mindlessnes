@@ -2503,3 +2503,300 @@ body {
     font-size: 11px;
     color: var(--nature-green);
 }
+
+/* ========================================
+   Habit Analysis Panel
+   ======================================== */
+
+.ha-section {
+    background: var(--bg-glass);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 12px;
+}
+
+.ha-competence {
+    border-width: 2px;
+}
+
+.ha-section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.ha-stage-emoji {
+    font-size: 32px;
+}
+
+.ha-stage-name {
+    font-family: var(--font-display);
+    font-size: 16px;
+}
+
+.ha-stage-sub {
+    font-size: 10px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+.ha-section-title {
+    font-family: var(--font-display);
+    font-size: 15px;
+    color: var(--text-gold);
+    margin-bottom: 6px;
+}
+
+.ha-section-sub {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+}
+
+.ha-desc {
+    font-size: 13px;
+    color: var(--text-primary);
+    line-height: 1.5;
+    margin: 8px 0;
+}
+
+.ha-analogy {
+    font-size: 12px;
+    color: var(--soft-violet);
+    background: rgba(155, 89, 182, 0.1);
+    padding: 8px 10px;
+    border-radius: 8px;
+    margin: 8px 0;
+    line-height: 1.4;
+}
+
+.ha-advice {
+    font-size: 12px;
+    color: var(--nature-green);
+    background: rgba(46, 204, 113, 0.08);
+    padding: 8px 10px;
+    border-radius: 8px;
+    margin-top: 8px;
+    line-height: 1.4;
+}
+
+/* Competence dots */
+.ha-stage-dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-top: 14px;
+}
+
+.ha-dot {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.3s;
+}
+
+.ha-dot.active {
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.2);
+}
+
+.ha-dot-line {
+    width: 20px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Automaticity ring */
+.ha-auto-wrap {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.ha-auto-ring {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0;
+}
+
+.ha-auto-ring svg {
+    width: 100%;
+    height: 100%;
+}
+
+.ha-auto-value {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: var(--text-primary);
+}
+
+.ha-auto-info {
+    flex: 1;
+}
+
+.ha-auto-pred {
+    font-family: var(--font-display);
+    font-size: 14px;
+    color: var(--text-gold);
+    margin-bottom: 6px;
+}
+
+.ha-auto-note {
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* Skill level */
+.ha-skill-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.ha-skill-emoji {
+    font-size: 24px;
+}
+
+.ha-skill-name {
+    font-family: var(--font-display);
+    font-size: 18px;
+    flex: 1;
+}
+
+.ha-skill-hours {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.ha-progress-bar {
+    height: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.ha-progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s;
+}
+
+.ha-skill-next {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+}
+
+/* Neuroplasticity */
+.ha-neuro-name {
+    font-family: var(--font-display);
+    font-size: 14px;
+    color: var(--soft-violet);
+    margin-bottom: 4px;
+}
+
+.ha-neuro-detail {
+    font-size: 11px;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.03);
+    padding: 6px 8px;
+    border-radius: 6px;
+    margin-top: 6px;
+}
+
+/* Metrics grid */
+.ha-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.ha-metric {
+    text-align: center;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+    padding: 10px 4px;
+}
+
+.ha-metric-value {
+    font-family: var(--font-display);
+    font-size: 18px;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.ha-metric-label {
+    font-size: 10px;
+    color: var(--text-secondary);
+}
+
+/* Weekly biorhythm */
+.ha-weekdays {
+    display: flex;
+    justify-content: space-between;
+    height: 80px;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.ha-weekday {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
+
+.ha-weekday-bar-wrap {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+}
+
+.ha-weekday-bar {
+    width: 100%;
+    border-radius: 3px 3px 0 0;
+    min-height: 2px;
+    transition: height 0.4s;
+}
+
+.ha-weekday-label {
+    font-size: 10px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+.ha-weekday-val {
+    font-size: 9px;
+    color: var(--text-secondary);
+}
+
+/* Sources */
+.ha-sources {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.25);
+    padding: 10px;
+    line-height: 1.6;
+}
+
+.ha-sources-title {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
