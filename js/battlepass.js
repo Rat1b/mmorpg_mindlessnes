@@ -74,6 +74,11 @@ class BattlePassSystem {
                 claimedPremium: []
             };
         }
+
+        // Ремонт NaN (если старые данные повреждены)
+        const bp = this.gameState.battlePass;
+        if (isNaN(bp.xp)) bp.xp = 0;
+        if (isNaN(bp.level)) bp.level = 0;
     }
 
     // Добавить XP (вызывается из meditation.js)
@@ -92,9 +97,9 @@ class BattlePassSystem {
 
         if (levelsGained > 0) {
             showNotification(`⬆️ Battle Pass Ур. ${bp.level}!`);
-            storage.saveGame(this.gameState);
         }
 
+        storage.saveGame(this.gameState);
         return levelsGained;
     }
 
@@ -122,7 +127,7 @@ class BattlePassSystem {
     applyReward(reward) {
         switch (reward.type) {
             case 'coins':
-                this.gameState.currency.coins += reward.amount;
+                this.gameState.currency.pranaCoins += reward.amount;
                 break;
             case 'gems':
                 this.gameState.currency.gems += reward.amount;

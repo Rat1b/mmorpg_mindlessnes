@@ -340,7 +340,7 @@ class DailyLoginSystem {
         const reward = this.getLoginReward(day);
 
         // Начислить награды
-        this.gameState.currency.coins += (reward.coins || 0);
+        this.gameState.currency.pranaCoins += (reward.coins || 0);
         this.gameState.currency.gems += (reward.gems || 0);
         this.gameState.dailyLoginData.claimedToday = true;
 

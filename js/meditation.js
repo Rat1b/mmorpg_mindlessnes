@@ -149,10 +149,22 @@ class MeditationSystem {
         if (elapsedMinutes >= session.targetMinutes) {
             // Completed while offline!
             console.log(`Offline meditation completed! Elapsed: ${elapsedMinutes.toFixed(1)}m`);
-            // We need to call complete, but logic expects running state or we assume implicit
+
+            // Проверяем, не были ли уже начислены награды
+            if (session.credited) {
+                console.log('Session already credited, skipping reward.');
+                delete this.gameState.activeMeditation;
+                storage.saveGame(this.gameState);
+                return;
+            }
+
             this.startedAt = session.startTime;
             this.targetMinutes = session.targetMinutes;
             this.missedBreaths = session.missedBreaths || 0;
+
+            // Помечаем сессию как начисленную
+            this.gameState.activeMeditation.credited = true;
+            storage.saveGame(this.gameState);
 
             // Clean up UI state just in case
             delete this.gameState.activeMeditation;
@@ -310,19 +322,19 @@ class MeditationSystem {
 
         // Battle Pass XP (1 XP / минута)
         if (window.game && window.game.battlePass) {
-            window.game.battlePass.addXP(totalMinutes);
+            window.game.battlePass.addXP(minutes);
         }
 
         // Строительство храма (если игрок рядом)
         if (window.game && window.game.temples && window.game.player) {
             const px = Math.floor(window.game.player.x / TILE_SIZE);
             const py = Math.floor(window.game.player.y / TILE_SIZE);
-            window.game.temples.addMinutes(px, py, totalMinutes);
+            window.game.temples.addMinutes(px, py, minutes);
         }
 
         // Событие — ночные сессии
         if (window.game && window.game.events) {
-            window.game.events.trackNightSession(totalMinutes);
+            window.game.events.trackNightSession(minutes);
         }
 
         // === Показать результат челленджа после попапа наград ===
@@ -630,14 +642,14 @@ class MeditationSystem2 {
 
         // Battle Pass XP
         if (window.game && window.game.battlePass) {
-            window.game.battlePass.addXP(totalMinutes);
+            window.game.battlePass.addXP(minutes);
         }
 
         // Строительство храма (если игрок рядом)
         if (window.game && window.game.temples && window.game.player) {
             const px = Math.floor(window.game.player.x / TILE_SIZE);
             const py = Math.floor(window.game.player.y / TILE_SIZE);
-            window.game.temples.addMinutes(px, py, totalMinutes);
+            window.game.temples.addMinutes(px, py, minutes);
         }
     }
 }

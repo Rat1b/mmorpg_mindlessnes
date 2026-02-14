@@ -139,9 +139,9 @@ class TempleSystem {
     drawTemples(ctx, camera) {
         TEMPLES.forEach(t => {
             const stage = this.getStage(t.id);
-            const screenX = (t.x * TILE_SIZE - camera.x) * camera.zoom;
-            const screenY = (t.y * TILE_SIZE - camera.y) * camera.zoom;
-            const size = t.size * TILE_SIZE * camera.zoom;
+            const screenX = t.x * TILE_SIZE - camera.x;
+            const screenY = t.y * TILE_SIZE - camera.y;
+            const size = t.size * TILE_SIZE;
 
             // Не рисовать если за экраном
             if (screenX + size < 0 || screenY + size < 0 ||
@@ -158,9 +158,9 @@ class TempleSystem {
             if (stage > 0 && stage < 5) {
                 const progress = this.getProgress(t.id);
                 const barW = size * 0.8;
-                const barH = 4 * camera.zoom;
+                const barH = 4;
                 const barX = screenX + (size - barW) / 2;
-                const barY = screenY + size + 4 * camera.zoom;
+                const barY = screenY + size + 4;
 
                 ctx.fillStyle = 'rgba(0,0,0,0.6)';
                 ctx.fillRect(barX, barY, barW, barH);

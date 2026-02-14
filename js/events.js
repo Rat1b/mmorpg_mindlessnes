@@ -109,7 +109,7 @@ class EventSystem {
         if (progress < quest.target) return false;
 
         // Забрать награду
-        this.gameState.currency.coins += (quest.reward.coins || 0);
+        this.gameState.currency.pranaCoins += (quest.reward.coins || 0);
         this.gameState.currency.gems += (quest.reward.gems || 0);
         this.gameState.events.completedQuests.push(questId);
 
