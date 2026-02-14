@@ -83,25 +83,11 @@ function saveGame(gameState) {
     }
 }
 
-function exportSaveData() {
+function exportSaveWin() {
     const gameState = loadGame();
     const jsonStr = JSON.stringify(gameState, null, 2);
     const filename = `breath_awareness_save_${utils.getDateKey()}.json`;
     const blob = new Blob([jsonStr], { type: 'application/json' });
-
-    // На iOS/iPad используем Web Share API — он правильно сохраняет имя файла
-    if (navigator.share && navigator.canShare) {
-        const file = new File([blob], filename, { type: 'application/json' });
-        const shareData = { files: [file] };
-        if (navigator.canShare(shareData)) {
-            navigator.share(shareData).catch(() => {
-                // Если пользователь отменил — ничего не делаем
-            });
-            return;
-        }
-    }
-
-    // Fallback для десктопных браузеров
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -111,6 +97,24 @@ function exportSaveData() {
     a.click();
     document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
+
+function exportSaveIOS() {
+    const gameState = loadGame();
+    const jsonStr = JSON.stringify(gameState, null, 2);
+    const filename = `breath_awareness_save_${utils.getDateKey()}.json`;
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+
+    if (navigator.share && navigator.canShare) {
+        const file = new File([blob], filename, { type: 'application/json' });
+        const shareData = { files: [file] };
+        if (navigator.canShare(shareData)) {
+            navigator.share(shareData).catch(() => { });
+            return;
+        }
+    }
+    // Fallback если Share API недоступен
+    alert('Web Share API недоступен на этом устройстве. Используйте кнопку "Скачать (Win)".');
 }
 
 function importSaveData(event) {
@@ -161,4 +165,4 @@ function setTotalMinutes(minutes) {
     return true;
 }
 
-window.storage = { loadGame, saveGame, exportSaveData, importSaveData, updateStreak, setTotalMinutes, DEFAULT_SAVE };
+window.storage = { loadGame, saveGame, exportSaveWin, exportSaveIOS, importSaveData, updateStreak, setTotalMinutes, DEFAULT_SAVE };
