@@ -49,6 +49,21 @@ class Game {
         this.celebrating = false;
         this.celebrationTimer = 0;
 
+        // Проверить ежедневный логин при входе
+        this.dailyLogin.checkDailyLogin();
+
+        // Battle Pass
+        this.battlePass = new BattlePassSystem(this.gameState);
+
+        // Temple building
+        this.temples = new TempleSystem(this.gameState);
+
+        // Extended Stats
+        this.extStats = new ExtendedStats(this.gameState);
+
+        // Events
+        this.events = new EventSystem(this.gameState);
+
 
         // Camera - размер вьюпорта в игровых координатах (делим на зум)
         this.camera = {
@@ -291,6 +306,11 @@ class Game {
         // Draw resources (ground level)
         if (this.resources) {
             this.resources.forEach(res => res.draw(this.ctx, this.camera));
+        }
+
+        // Draw temples
+        if (this.temples) {
+            this.temples.drawTemples(this.ctx, this.camera);
         }
 
         // Collect all entities for y-sorting

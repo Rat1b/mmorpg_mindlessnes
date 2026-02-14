@@ -352,6 +352,22 @@
                 <span class="menu-icon">🎨</span>
                 <span>Галерея</span>
             </button>
+            <button class="menu-btn" onclick="toggleBattlePassPanel()">
+                <span class="menu-icon">🌟</span>
+                <span>Battle Pass</span>
+            </button>
+            <button class="menu-btn" onclick="toggleTemplesPanel()">
+                <span class="menu-icon">🏛️</span>
+                <span>Храмы</span>
+            </button>
+            <button class="menu-btn" onclick="toggleExtStatsPanel()">
+                <span class="menu-icon">📊</span>
+                <span>Аналитика</span>
+            </button>
+            <button class="menu-btn" onclick="toggleEventsPanel()">
+                <span class="menu-icon">🎉</span>
+                <span>События</span>
+            </button>
             <button class="menu-btn" onclick="toggleSettingsPanel()">
                 <span class="menu-icon">⚙️</span>
                 <span>Настройки</span>
@@ -429,16 +445,84 @@
                         <div class="goal-bar">
                             <div class="goal-fill" id="goal-fill"></div>
                         </div>
-                        <span id="goal-text">0 / 3ч</span>
+                        <span id="goal-text">0 / 5ч</span>
                     </div>
                     <div class="goal-setting">
                         <label>Цель (мин):</label>
-                        <input type="number" id="daily-goal-input" value="180" min="10" max="600">
+                        <input type="number" id="daily-goal-input" value="300" min="10" max="600">
                         <button onclick="updateDailyGoal()">✓</button>
                     </div>
                 </div>
                 <h4 style="color:#FFD700;margin:15px 0 10px;">🖼️ Коллекция баннеров</h4>
                 <div class="gallery-grid" id="gallery-grid"></div>
+            </div>
+        </div>
+
+        <!-- Battle Pass Panel -->
+        <div id="battlepass-panel" class="side-panel large-panel">
+            <div class="panel-header">
+                <span>🌟 Battle Pass</span>
+                <button class="close-btn" onclick="toggleBattlePassPanel()">×</button>
+            </div>
+            <div class="panel-content">
+                <div class="bp-header">
+                    <div class="bp-season-name">🌸 Сезон Пробуждения</div>
+                    <div id="bp-level-text" class="bp-level">Ур. 0 / 30</div>
+                    <div id="bp-time-left" class="bp-time">Загрузка...</div>
+                </div>
+                <div class="bp-xp-container">
+                    <div class="bp-xp-bar-bg">
+                        <div class="bp-xp-fill" id="bp-xp-bar"></div>
+                    </div>
+                    <span id="bp-xp-text">0 / 100 XP</span>
+                </div>
+                <button class="action-btn start-btn" style="width:100%;margin:10px 0;padding:10px;font-size:14px;"
+                    onclick="claimAllBPFree()">🎁 Забрать все доступные</button>
+                <div class="bp-track-header">
+                    <span>Ур.</span>
+                    <span>🆓 Free</span>
+                    <span>⭐ Premium</span>
+                </div>
+                <div id="battlepass-track" class="bp-track"></div>
+            </div>
+        </div>
+
+        <!-- Temples Panel -->
+        <div id="temples-panel" class="side-panel">
+            <div class="panel-header">
+                <span>🏛️ Храмы</span>
+                <button class="close-btn" onclick="toggleTemplesPanel()">×</button>
+            </div>
+            <div class="panel-content">
+                <p style="color:var(--text-secondary);font-size:13px;margin-bottom:12px;">
+                    Медитируй рядом с местом строительства — храм будет расти! 15ч = 100%
+                </p>
+                <div id="temples-list"></div>
+            </div>
+        </div>
+
+        <!-- Extended Stats Panel -->
+        <div id="extstats-panel" class="side-panel large-panel">
+            <div class="panel-header">
+                <span>📈 Аналитика</span>
+                <button class="close-btn" onclick="toggleExtStatsPanel()">×</button>
+            </div>
+            <div class="panel-content">
+                <h4 style="color:var(--text-gold);margin-bottom:8px;">Heatmap (12 недель)</h4>
+                <div id="heatmap-container"></div>
+                <h4 style="color:var(--text-gold);margin:15px 0 8px;">Минуты/день (30 дней)</h4>
+                <canvas id="stats-chart" width="400" height="200" style="width:100%;border-radius:10px;"></canvas>
+            </div>
+        </div>
+
+        <!-- Events Panel -->
+        <div id="events-panel" class="side-panel large-panel">
+            <div class="panel-header">
+                <span>🎉 События</span>
+                <button class="close-btn" onclick="toggleEventsPanel()">×</button>
+            </div>
+            <div class="panel-content">
+                <div id="events-list"></div>
             </div>
         </div>
 
@@ -477,6 +561,10 @@
     <script src="js/ui.js"></script>
     <script src="js/resources.js"></script>
     <script src="js/daily-login.js"></script>
+    <script src="js/battlepass.js"></script>
+    <script src="js/temples.js"></script>
+    <script src="js/ext-stats.js"></script>
+    <script src="js/events.js"></script>
     <script src="js/game.js"></script>
 </body>
 

@@ -57,10 +57,29 @@ const DEFAULT_SAVE = {
     },
     // Ежедневная цель и баннеры
     dailyGoal: {
-        targetMinutes: 180  // 3 часа по умолчанию
+        targetMinutes: 300  // 5 часов по умолчанию
     },
     collectedBanners: [],
     dailyGoalReachedToday: null,
+    dailyLoginData: {
+        lastLoginDate: null,
+        consecutiveDays: 0,
+        totalDays: 0,
+        claimedToday: false
+    },
+    battlePass: {
+        seasonId: 'season_1',
+        level: 0,
+        xp: 0,
+        premium: false,
+        claimedFree: [],
+        claimedPremium: []
+    },
+    temples: {},
+    events: {
+        completedQuests: [],
+        eventProgress: {}
+    },
     createdAt: Date.now(),
     lastSaved: Date.now()
 };

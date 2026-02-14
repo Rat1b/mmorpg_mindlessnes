@@ -308,6 +308,23 @@ class MeditationSystem {
             window.game.dailyLogin.checkDailyGoal();
         }
 
+        // Battle Pass XP (1 XP / минута)
+        if (window.game && window.game.battlePass) {
+            window.game.battlePass.addXP(totalMinutes);
+        }
+
+        // Строительство храма (если игрок рядом)
+        if (window.game && window.game.temples && window.game.player) {
+            const px = Math.floor(window.game.player.x / TILE_SIZE);
+            const py = Math.floor(window.game.player.y / TILE_SIZE);
+            window.game.temples.addMinutes(px, py, totalMinutes);
+        }
+
+        // Событие — ночные сессии
+        if (window.game && window.game.events) {
+            window.game.events.trackNightSession(totalMinutes);
+        }
+
         // === Показать результат челленджа после попапа наград ===
         if (challengeResult) {
             setTimeout(() => {
@@ -609,6 +626,18 @@ class MeditationSystem2 {
         // Check daily goal for banner
         if (window.game && window.game.dailyLogin) {
             window.game.dailyLogin.checkDailyGoal();
+        }
+
+        // Battle Pass XP
+        if (window.game && window.game.battlePass) {
+            window.game.battlePass.addXP(totalMinutes);
+        }
+
+        // Строительство храма (если игрок рядом)
+        if (window.game && window.game.temples && window.game.player) {
+            const px = Math.floor(window.game.player.x / TILE_SIZE);
+            const py = Math.floor(window.game.player.y / TILE_SIZE);
+            window.game.temples.addMinutes(px, py, totalMinutes);
         }
     }
 }

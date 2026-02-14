@@ -14,7 +14,7 @@ class DailyLoginSystem {
 
         // Инициализация полей если нет (обратная совместимость)
         if (!this.gameState.dailyGoal) {
-            this.gameState.dailyGoal = { targetMinutes: 180 };
+            this.gameState.dailyGoal = { targetMinutes: 300 };
         }
         if (!this.gameState.collectedBanners) {
             this.gameState.collectedBanners = [];
@@ -250,6 +250,164 @@ class DailyLoginSystem {
         const [y, m, d] = dateStr.split('-');
         const months = ['', 'янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
         return `${parseInt(d)} ${months[parseInt(m)]} ${y}`;
+    }
+
+    // === ЕЖЕДНЕВНЫЙ ЛОГИН С НАГРАДАМИ ===
+    checkDailyLogin() {
+        const today = utils.getDateKey();
+        if (!this.gameState.dailyLoginData) {
+            this.gameState.dailyLoginData = {
+                lastLoginDate: null,
+                consecutiveDays: 0,
+                totalDays: 0,
+                claimedToday: false
+            };
+        }
+
+        if (this.gameState.dailyLoginData.lastLoginDate === today) {
+            return; // Уже залогинился сегодня
+        }
+
+        const yesterday = utils.getDateKey(new Date(Date.now() - 86400000));
+        const wasYesterday = this.gameState.dailyLoginData.lastLoginDate === yesterday;
+
+        if (wasYesterday) {
+            this.gameState.dailyLoginData.consecutiveDays++;
+        } else if (this.gameState.dailyLoginData.lastLoginDate !== null) {
+            // Пропустил больше 1 дня — сброс (но 1 день прощаем)
+            const lastDate = new Date(this.gameState.dailyLoginData.lastLoginDate);
+            const diff = Math.floor((Date.now() - lastDate.getTime()) / 86400000);
+            if (diff > 2) {
+                this.gameState.dailyLoginData.consecutiveDays = 1;
+            } else {
+                this.gameState.dailyLoginData.consecutiveDays++;
+            }
+        } else {
+            this.gameState.dailyLoginData.consecutiveDays = 1;
+        }
+
+        this.gameState.dailyLoginData.lastLoginDate = today;
+        this.gameState.dailyLoginData.totalDays++;
+        this.gameState.dailyLoginData.claimedToday = false;
+        storage.saveGame(this.gameState);
+
+        // Показать попап логина
+        setTimeout(() => this.showLoginRewardPopup(), 2000);
+    }
+
+    getLoginReward(day) {
+        // Циклическое расписание 30 дней
+        const cycle = ((day - 1) % 30) + 1;
+        const rewards = {
+            1: { coins: 100, label: '🪙 100' },
+            2: { coins: 150, label: '🪙 150' },
+            3: { coins: 200, label: '🪙 200' },
+            4: { coins: 250, label: '🪙 250' },
+            5: { coins: 300, label: '🪙 300' },
+            6: { coins: 400, label: '🪙 400' },
+            7: { coins: 500, gems: 5, label: '🪙 500 + 💎 5' },
+            8: { coins: 200, label: '🪙 200' },
+            9: { coins: 250, label: '🪙 250' },
+            10: { coins: 300, label: '🪙 300' },
+            11: { coins: 350, label: '🪙 350' },
+            12: { coins: 400, label: '🪙 400' },
+            13: { coins: 500, label: '🪙 500' },
+            14: { coins: 600, gems: 10, label: '🪙 600 + 💎 10' },
+            15: { coins: 300, label: '🪙 300' },
+            16: { coins: 350, label: '🪙 350' },
+            17: { coins: 400, label: '🪙 400' },
+            18: { coins: 450, label: '🪙 450' },
+            19: { coins: 500, label: '🪙 500' },
+            20: { coins: 600, label: '🪙 600' },
+            21: { coins: 700, gems: 15, label: '🪙 700 + 💎 15' },
+            22: { coins: 400, label: '🪙 400' },
+            23: { coins: 450, label: '🪙 450' },
+            24: { coins: 500, label: '🪙 500' },
+            25: { coins: 600, label: '🪙 600' },
+            26: { coins: 700, label: '🪙 700' },
+            27: { coins: 800, label: '🪙 800' },
+            28: { coins: 1000, gems: 20, label: '🪙 1000 + 💎 20' },
+            29: { coins: 800, label: '🪙 800' },
+            30: { coins: 1500, gems: 30, label: '🪙 1500 + 💎 30 🌟' }
+        };
+        return rewards[cycle] || { coins: 100, label: '🪙 100' };
+    }
+
+    claimLoginReward() {
+        if (this.gameState.dailyLoginData.claimedToday) return;
+
+        const day = this.gameState.dailyLoginData.consecutiveDays;
+        const reward = this.getLoginReward(day);
+
+        // Начислить награды
+        this.gameState.currency.coins += (reward.coins || 0);
+        this.gameState.currency.gems += (reward.gems || 0);
+        this.gameState.dailyLoginData.claimedToday = true;
+
+        storage.saveGame(this.gameState);
+        if (window.updateHUD) updateHUD(this.gameState);
+
+        // Проверить milestones
+        this.checkStreakMilestone(day);
+    }
+
+    showLoginRewardPopup() {
+        const day = this.gameState.dailyLoginData.consecutiveDays;
+        const reward = this.getLoginReward(day);
+        const claimed = this.gameState.dailyLoginData.claimedToday;
+
+        const overlay = document.createElement('div');
+        overlay.className = 'banner-unlock-overlay';
+        overlay.innerHTML = `
+            <div class="banner-unlock-content">
+                <div class="banner-unlock-title">📅 День ${day}</div>
+                <div style="font-size:48px;margin:15px 0;">🎁</div>
+                <div class="banner-unlock-name">Награда: ${reward.label}</div>
+                <div class="banner-unlock-desc">Серия: ${day} ${day === 1 ? 'день' : day < 5 ? 'дня' : 'дней'}</div>
+                <button class="banner-unlock-btn" id="claim-login-btn" ${claimed ? 'disabled style="opacity:0.5"' : ''}>
+                    ${claimed ? 'Уже забрано' : 'Забрать!'}
+                </button>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+        requestAnimationFrame(() => overlay.classList.add('active'));
+
+        const btn = overlay.querySelector('#claim-login-btn');
+        if (!claimed) {
+            btn.addEventListener('click', () => {
+                this.claimLoginReward();
+                btn.textContent = '✅ Забрано!';
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+                setTimeout(() => overlay.remove(), 1500);
+            });
+        } else {
+            btn.addEventListener('click', () => overlay.remove());
+        }
+    }
+
+    // === СТРИКИ ===
+    checkStreakMilestone(days) {
+        const milestones = [
+            { days: 3, title: '🔥 3 дня подряд!', duration: 180 },
+            { days: 7, title: '⭐ Неделя практики!', duration: 240 },
+            { days: 14, title: '🌟 2 недели!', duration: 300 },
+            { days: 30, title: '👑 Месяц осознанности!', duration: 360 },
+            { days: 100, title: '💫 100 дней!', duration: 420 },
+            { days: 365, title: '🏆 Мастер Года!', duration: 480 }
+        ];
+
+        const milestone = milestones.find(m => m.days === days);
+        if (milestone) {
+            showConfetti();
+            if (window.game) {
+                window.game.celebrating = true;
+                window.game.celebrationTimer = milestone.duration;
+            }
+            setTimeout(() => {
+                showNotification(milestone.title);
+            }, 1000);
+        }
     }
 
     // Установить цель дня
