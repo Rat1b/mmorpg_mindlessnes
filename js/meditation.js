@@ -303,6 +303,11 @@ class MeditationSystem {
         // Check achievements
         checkAchievements(this.gameState);
 
+        // Check daily goal for banner
+        if (window.game && window.game.dailyLogin) {
+            window.game.dailyLogin.checkDailyGoal();
+        }
+
         // === Показать результат челленджа после попапа наград ===
         if (challengeResult) {
             setTimeout(() => {
@@ -600,6 +605,11 @@ class MeditationSystem2 {
 
         showRewardPopup(rewards);
         this.onUpdate();
+
+        // Check daily goal for banner
+        if (window.game && window.game.dailyLogin) {
+            window.game.dailyLogin.checkDailyGoal();
+        }
     }
 }
 

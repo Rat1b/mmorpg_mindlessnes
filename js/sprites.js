@@ -292,6 +292,35 @@ function drawCharacterInfo(ctx, x, y, character) {
 
     ctx.fillStyle = lvlColor;
     ctx.fillText(bottomText, x, y + 29);
+
+    // === ПРОГРЕССБАР ЦЕЛИ ДНЯ (только для игрока) ===
+    if (character.isPlayer && window.game && window.game.dailyLogin) {
+        const progress = window.game.dailyLogin.getProgress();
+        const barW = 4;
+        const barH = 28;
+        const barX = x + maxWidth / 2 + 6;
+        const barY = bgY + 4;
+
+        // Фон
+        ctx.fillStyle = 'rgba(0,0,0,0.6)';
+        ctx.fillRect(barX, barY, barW, barH);
+
+        // Заполнение снизу вверх
+        const fillH = barH * progress;
+        if (progress >= 1) {
+            // Золотая пульсация при 100%
+            const pulse = 0.7 + Math.sin(Date.now() * 0.005) * 0.3;
+            ctx.fillStyle = `rgba(255,215,0,${pulse})`;
+        } else {
+            ctx.fillStyle = '#4CAF50';
+        }
+        ctx.fillRect(barX, barY + barH - fillH, barW, fillH);
+
+        // Рамка
+        ctx.strokeStyle = progress >= 1 ? '#FFD700' : 'rgba(255,255,255,0.3)';
+        ctx.lineWidth = 0.5;
+        ctx.strokeRect(barX, barY, barW, barH);
+    }
 }
 
 window.sprites = { drawCharacter, drawCharacterInfo, generateCharacterSprites, SPRITE_SIZE };

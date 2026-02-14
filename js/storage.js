@@ -55,6 +55,12 @@ const DEFAULT_SAVE = {
         soundEnabled: true,
         musicEnabled: true
     },
+    // Ежедневная цель и баннеры
+    dailyGoal: {
+        targetMinutes: 180  // 3 часа по умолчанию
+    },
+    collectedBanners: [],
+    dailyGoalReachedToday: null,
     createdAt: Date.now(),
     lastSaved: Date.now()
 };

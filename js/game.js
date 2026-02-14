@@ -44,6 +44,11 @@ class Game {
         // Resources (Albion-style farming)
         this.resources = window.generateWorldResources ? generateWorldResources(this.map) : [];
 
+        // Daily login & banners system
+        this.dailyLogin = new DailyLoginSystem(this.gameState);
+        this.celebrating = false;
+        this.celebrationTimer = 0;
+
 
         // Camera - размер вьюпорта в игровых координатах (делим на зум)
         this.camera = {
@@ -196,6 +201,14 @@ class Game {
             this.resources.forEach(res => res.update());
         }
 
+        // Celebration timer (NPC dancing)
+        if (this.celebrating) {
+            this.celebrationTimer--;
+            if (this.celebrationTimer <= 0) {
+                this.celebrating = false;
+            }
+        }
+
         this.updateResourceForecast();
     }
 
@@ -285,9 +298,14 @@ class Game {
         const entities = [this.player, ...this.npcs];
         entities.sort((a, b) => a.y - b.y);
 
-        // Draw entities
+        // Draw entities (with celebration dance)
         entities.forEach(entity => {
+            let savedY = entity.y;
+            if (this.celebrating && !entity.isPlayer) {
+                entity.y += Math.sin(this.frame * 0.15 + entity.x * 0.1) * 5;
+            }
             entity.draw(this.ctx, this.camera, this.frame);
+            entity.y = savedY;
         });
 
         this.ctx.restore();

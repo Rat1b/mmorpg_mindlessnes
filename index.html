@@ -348,6 +348,10 @@
                 <span class="menu-icon">📋</span>
                 <span>Квесты</span>
             </button>
+            <button class="menu-btn" onclick="toggleGalleryPanel()">
+                <span class="menu-icon">🎨</span>
+                <span>Галерея</span>
+            </button>
             <button class="menu-btn" onclick="toggleSettingsPanel()">
                 <span class="menu-icon">⚙️</span>
                 <span>Настройки</span>
@@ -358,6 +362,11 @@
         <button class="interact-btn" id="interact-btn" onclick="interactWithNearbyNPC()">
             E
         </button>
+
+        <!-- Particles container for confetti -->
+        <div id="particles-container"
+            style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9998;overflow:hidden;">
+        </div>
 
         <!-- Settings Panel -->
         <div id="settings-panel" class="side-panel">
@@ -407,6 +416,32 @@
             </div>
         </div>
 
+        <!-- Gallery Panel -->
+        <div id="gallery-panel" class="side-panel large-panel">
+            <div class="panel-header">
+                <span>🎨 Галерея</span>
+                <button class="close-btn" onclick="toggleGalleryPanel()">×</button>
+            </div>
+            <div class="panel-content">
+                <div class="daily-goal-section">
+                    <h4>🎯 Цель дня</h4>
+                    <div class="goal-progress">
+                        <div class="goal-bar">
+                            <div class="goal-fill" id="goal-fill"></div>
+                        </div>
+                        <span id="goal-text">0 / 3ч</span>
+                    </div>
+                    <div class="goal-setting">
+                        <label>Цель (мин):</label>
+                        <input type="number" id="daily-goal-input" value="180" min="10" max="600">
+                        <button onclick="updateDailyGoal()">✓</button>
+                    </div>
+                </div>
+                <h4 style="color:#FFD700;margin:15px 0 10px;">🖼️ Коллекция баннеров</h4>
+                <div class="gallery-grid" id="gallery-grid"></div>
+            </div>
+        </div>
+
         <!-- Achievements Panel -->
         <div id="achievements-panel" class="side-panel large-panel">
             <div class="panel-header">
@@ -427,6 +462,7 @@
     <script src="data/dialogues-data.js"></script>
     <script src="data/achievements-data.js"></script>
     <script src="data/gacha-data.js"></script>
+    <script src="data/banners-data.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/storage.js"></script>
     <script src="js/sprites.js"></script>
@@ -440,6 +476,7 @@
     <script src="js/quests.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/resources.js"></script>
+    <script src="js/daily-login.js"></script>
     <script src="js/game.js"></script>
 </body>
 
