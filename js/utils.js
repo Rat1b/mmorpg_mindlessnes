@@ -16,13 +16,8 @@ function formatTimeFull(minutes) {
     if (minutes < 60) return `${Math.round(minutes)} мин`;
     const hours = Math.floor(minutes / 60);
     const mins = Math.round(minutes % 60);
-    if (hours < 24) return mins > 0 ? `${hours} ч ${mins} мин` : `${hours} ч`;
-    const days = Math.floor(hours / 24);
-    const remHours = hours % 24;
-    const parts = [`${days} д`];
-    if (remHours > 0) parts.push(`${remHours} ч`);
-    if (mins > 0) parts.push(`${mins} мин`);
-    return parts.join(' ');
+    // Всегда показываем общее количество часов и минут
+    return mins > 0 ? `${hours} ч ${mins} мин` : `${hours} ч`;
 }
 
 function formatNumber(num) {
